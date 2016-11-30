@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SpringBootVaadinAccountManager.iml" filepath="$PROJECT_DIR$/.idea/modules/SpringBootVaadinAccountManager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SpringBootVaadinAccountManager_main.iml" filepath="$PROJECT_DIR$/.idea/modules/SpringBootVaadinAccountManager_main.iml" group="SpringBootVaadinAccountManager" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SpringBootVaadinAccountManager_test.iml" filepath="$PROJECT_DIR$/.idea/modules/SpringBootVaadinAccountManager_test.iml" group="SpringBootVaadinAccountManager" />
+    </modules>
+  </component>
+</project>
