@@ -3,6 +3,7 @@ package hello.ui;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.ui.*;
+import com.vaadin.ui.renderers.ButtonRenderer;
 import hello.Application;
 import hello.model.country.Country;
 import hello.model.country.CountryRepository;
@@ -55,10 +56,40 @@ public class VaadinUI extends UI {
 
   @Override
   protected void init(VaadinRequest request) {
-    // build layout
+
+    // AccordionMenu
+    Accordion accordionMenu = new Accordion();
+    accordionMenu.setWidth(200.0f, Unit.POINTS);
+    accordionMenu.setHeight(100.0f, Unit.PERCENTAGE);
+
+//accordionMenu.getSelectedTab()
+//accordionMenu.setSelectedTab();
+    for (int i = 0; i < 6; i++) {
+      final VerticalLayout layout = new VerticalLayout();
+      Button button1 = new Button("Button1");
+      button1.setWidth(100.0f, Unit.PERCENTAGE);
+      Button button2 = new Button("Button1");
+      button2.setWidth(100.0f, Unit.PERCENTAGE);
+      layout.addComponent(button1);
+      layout.addComponent(button2);
+      layout.setSpacing(true);
+      layout.setMargin(true);
+      accordionMenu.addTab(layout, "Tab " + i, FontAwesome.ANDROID);
+      //accordionMenu.getTab(i - 1).setIcon(FontAwesome.ANDROID);
+    }
+
+    // build content layout
     HorizontalLayout actions = new HorizontalLayout(filter, buttonNewRecord, buttonsPopup);
     VerticalLayout mainLayout = new VerticalLayout(actions, grid, editor);
-    setContent(mainLayout);
+    mainLayout.setSizeFull();
+
+    // Main Content
+    HorizontalLayout horizontalLayout = new HorizontalLayout(accordionMenu, mainLayout);
+    horizontalLayout.setMargin(true);
+
+    // Set UI Content
+    //setContent(mainLayout);
+    setContent(horizontalLayout);
 
     // configure layouts and components
     actions.setSpacing(true);
@@ -76,7 +107,7 @@ public class VaadinUI extends UI {
     grid.getColumn("lastName").setHeaderCaption("Last Name");
     grid.getColumn("bornIn").setHeaderCaption("Born In");
     // hide columns
-    grid.removeColumn("id");
+//grid.removeColumn("id");
     grid.removeColumn("uuid");
     grid.removeColumn("email");
     grid.removeColumn("country");
@@ -86,6 +117,10 @@ public class VaadinUI extends UI {
     grid.setColumnOrder("firstName", "lastName", "bornIn");
     //TODO
     //6.24.8. Filtering
+    //TODO
+//grid.addColumn("id");
+Grid.Column buttonColumn = grid.getColumn("id");
+buttonColumn.setRenderer(new ButtonRenderer(event -> showPopup()));
 
     // TODO : Next Versions
     // Limit the visible properties, configure the Grid using the setColumns method to only show "firstName", "lastName" and "email" properties.
@@ -122,18 +157,6 @@ public class VaadinUI extends UI {
 
     // Initialize listing
     listCustomers(null);
-  }
-
-  private void intitUI() {
-    Accordion accordionMenu = new Accordion();
-    accordionMenu.setWidth(100.0f, Unit.POINTS);
-    accordionMenu.setHeight(100.0f, Unit.PERCENTAGE);
-
-    for (int i = 1; i < 8; i++) {
-      final VerticalLayout layout = new VerticalLayout(new Label("Text"));
-      layout.setMargin(true);
-      accordionMenu.addTab(layout, "Tab " + i);
-    }
   }
 
   // List customers/Update ContainerDataSource
