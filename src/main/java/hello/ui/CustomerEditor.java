@@ -1,7 +1,5 @@
 package hello.ui;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.*;
@@ -9,6 +7,7 @@ import hello.model.country.Country;
 import hello.model.country.CountryRepository;
 import hello.model.customer.Customer;
 import hello.model.customer.CustomerRepository;
+import hello.model.customer.CustomerStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
@@ -39,19 +38,24 @@ public class CustomerEditor extends VerticalLayout {
    */
   private Customer customer;
 
-  /* Fields to edit properties in Customer entity */
+  // Fields to edit properties in Customer entity
   TextField firstName = new TextField("First name");
   TextField lastName = new TextField("Last name");
   DateField bornIn = new DateField("Born In");
   TextField email = new TextField("Email");
-  ComboBox country = new ComboBox("Select your country");
-  ComboBox comboBox = new ComboBox("Select value");;
+  ComboBox country = new ComboBox("Select Country");
+  ComboBox customerStatus = new ComboBox("Select Customer Status");;
 
-  /* Action buttons */
+  // Action buttons
   Button save = new Button("Save", FontAwesome.SAVE);
   Button cancel = new Button("Cancel");
   Button delete = new Button("Delete", FontAwesome.TRASH_O);
+  // Layout
   CssLayout actions = new CssLayout(save, cancel, delete);
+  // Config Buttons
+  // TODO
+  //save.setStyleName(ValoTheme.BUTTON_PRIMARY);
+  //save.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 
   @Autowired
   public CustomerEditor(CustomerRepository customerRepository, CountryRepository countryRepository) {
@@ -61,14 +65,14 @@ public class CustomerEditor extends VerticalLayout {
     //TODO: Show Items country.getItemIds()
     //https://vaadin.com/docs/-/part/framework/datamodel/datamodel-container.html
     country.setContainerDataSource(new BeanItemContainer(Country.class, countryRepository.findAll()));
-//Country countryRecord = countryRepository.findAll().get(50);
-//country.setValue(countryRecord.getId());
+    //Country countryRecord = countryRepository.findAll().get(50);
+    //country.setValue(countryRecord.getId());
     //country.setItemCaption(countryRecord.getId(), countryRecord.getName());
     // Use the name property for item captions
     //country.setItemCaptionPropertyId("name");
+    // show caption property
     country.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
     country.setItemCaptionPropertyId("name");
-
     country.setNullSelectionAllowed(false);
     country.setFilteringMode(FilteringMode.CONTAINS);
     //country.setValue(country.getItemIds().iterator().next());
@@ -79,15 +83,19 @@ public class CustomerEditor extends VerticalLayout {
     // Create the selection component
     //comboBox.addContainerProperty("name", Country.class, "'Bolivia'");
     // Add some items (here by the item ID as the caption)
-    Object item = comboBox.addItem();
+    //Object item = comboBox.addItem();
     //item.getItemProperty("name").setValue("Sun");
     // Access a property in the item
-    comboBox.addItems("Mercury", "Venus", "Earth", "Jupiter");
-    comboBox.setNullSelectionAllowed(false);
-    comboBox.setValue("Earth");
+    //comboBox.addItems("Mercury", "Venus", "Earth", "Jupiter");
+    //comboBox.setNullSelectionAllowed(false);
+    //comboBox.setValue("Earth");
+
+    //Customer Status
+    customerStatus.addItems(CustomerStatus.values());
+    customerStatus.setNullSelectionAllowed(false);
 
     // Add components to VerticalLayout
-    addComponents(firstName, lastName, bornIn, email, country, comboBox, actions);
+    addComponents(firstName, lastName, bornIn, email, country, customerStatus, actions);
 
     // Configure and style components
     setSpacing(true);
@@ -122,10 +130,6 @@ public class CustomerEditor extends VerticalLayout {
     // Could also use annotation or "manual binding" or programmatically
     // moving values from fields to entities before saving
     BeanFieldGroup.bindFieldsUnbuffered(this.customer, this);
-
-    //Select country
-    country.select(this.customer);
-    comboBox.select("Venus");
 
     setVisible(true);
 

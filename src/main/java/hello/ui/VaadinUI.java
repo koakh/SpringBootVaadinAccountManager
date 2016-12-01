@@ -54,24 +54,35 @@ public class VaadinUI extends UI {
     VerticalLayout mainLayout = new VerticalLayout(actions, grid, editor);
     setContent(mainLayout);
 
-    // Configure layouts and components
+    // configure layouts and components
     actions.setSpacing(true);
     mainLayout.setMargin(true);
     mainLayout.setSpacing(true);
 
-    //repository
+    // repository
     List<Customer> customerDataSource = repository.findAll();
-    //List<Customer> customerDataSource = repository.findByLastNameStartsWithIgnoreCase("russel");
 
     //grid.setHeight(300, Unit.PIXELS);
     grid.setSizeFull();
     grid.setContainerDataSource(new BeanItemContainer(Customer.class, customerDataSource));
+    // configure columns : grid.getColumns()
+    grid.getColumn("email").setHeaderCaption("Email");
+    // hide columns
+    grid.removeColumn("id");
+    grid.removeColumn("uuid");
+    grid.removeColumn("email");
+    grid.removeColumn("country");
+    grid.removeColumn("status");
+    // Must be here after setContainerDataSource
+    // Columns that are not given for the method are placed after the specified columns in their natural order.
+    grid.setColumnOrder("firstName", "lastName", "bornIn");
 
-    //Must be here after setContainerDataSource
-    grid.setColumnOrder("id", "firstName", "lastName", "bornIn", "email", "country");
+    // TODO : Next Versions
+    // Limit the visible properties, configure the Grid using the setColumns method to only show "firstName", "lastName" and "email" properties.
+    //grid.setColumns("firstName", "lastName", "bornIn", "email");
 
-    //Assign PlaceHolder
-    filter.setInputPrompt("Filter by last name");
+    // assign placeHolder
+    filter.setInputPrompt("Filter by Last Name");
 
     // Hook logic to components
 

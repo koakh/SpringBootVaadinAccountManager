@@ -1,7 +1,9 @@
 package hello.model.customer;
 
+import hello.model.BaseEntity;
 import hello.model.country.Country;
 import org.hibernate.annotations.NaturalId;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -12,11 +14,10 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "customer")
-public class Customer implements Serializable {
+public class Customer extends BaseEntity {
 
   @Id
   @GeneratedValue
-  //@GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   @NaturalId
   UUID uuid = UUID.randomUUID();
@@ -32,6 +33,8 @@ public class Customer implements Serializable {
   @ManyToOne
   @JoinColumn(name = "country_id")
   private Country country;
+  @NotNull
+  private CustomerStatus status;
 
   // Required parametless constructor
   protected Customer() { }
@@ -56,8 +59,8 @@ public class Customer implements Serializable {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof Customer)) return false;
-    Customer book = (Customer) o;
-    return Objects.equals(getId(), book.getId());
+    Customer customer = (Customer) o;
+    return Objects.equals(getId(), customer.getId());
   }
 
   @Override
@@ -65,9 +68,7 @@ public class Customer implements Serializable {
     return Objects.hash(getId());
   }
 
-  public Long getId() {
-    return id;
-  }
+  public Long getId() { return id; }
 
   public UUID getUuid() { return uuid; }
 
@@ -110,4 +111,8 @@ public class Customer implements Serializable {
   public void setCountry(Country country) {
     this.country = country;
   }
+
+  public CustomerStatus getStatus() { return status; }
+
+  public void setStatus(CustomerStatus status) { this.status = status; }
 }

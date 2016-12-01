@@ -1,8 +1,10 @@
 package hello.model.country;
 
+import hello.model.BaseEntity;
 import hello.model.customer.Customer;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.id.GUIDGenerator;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.yaml.snakeyaml.events.Event;
 
 import javax.persistence.*;
@@ -14,7 +16,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "country")
-public class Country implements Serializable {
+public class Country extends BaseEntity {
 
   @Id
   @GeneratedValue
@@ -41,8 +43,8 @@ public class Country implements Serializable {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof Country)) return false;
-    Country book = (Country) o;
-    return Objects.equals(getId(), book.getId());
+    Country country = (Country) o;
+    return Objects.equals(getId(), country.getId());
   }
 
   @Override
@@ -50,9 +52,7 @@ public class Country implements Serializable {
     return Objects.hash(getId());
   }
 
-  public Long getId() {
-    return id;
-  }
+  public Long getId() { return id; }
 
   public UUID getUuid() { return uuid; }
 
