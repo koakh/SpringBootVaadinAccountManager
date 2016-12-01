@@ -20,7 +20,7 @@ public class CountryFaker {
             faker.address.countryCode()
         );
 
-        log.info(String.format("Creating: %s", country.toString()));
+        //log.info(String.format("Creating: %s", country.toString()));
 
         repository.save(country);
       }

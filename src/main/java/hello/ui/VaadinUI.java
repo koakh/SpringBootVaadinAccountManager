@@ -1,5 +1,7 @@
 package hello.ui;
 
+import hello.model.country.Country;
+import hello.model.country.CountryRepository;
 import hello.model.customer.Customer;
 import hello.model.customer.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,25 +26,31 @@ import java.util.List;
 @Theme("valo")
 public class VaadinUI extends UI {
 
-  private final CustomerRepository repo;
+  private final CustomerRepository repository;
   private final CustomerEditor editor;
   private final Grid grid;
   private final TextField filter;
-  private final Button addNewBtn;
+  private final Button buttonsNewRecord;
+  private final Country countryDefault;
+//Inject Configuration Properties
+//@Value("${model.faker.records.country.default}")
+//private long countryDefaultId = 10L;
+
 
   @Autowired
-  public VaadinUI(CustomerRepository repo, CustomerEditor editor) {
-    this.repo = repo;
+  public VaadinUI(CustomerRepository repository, CountryRepository countryRepository, CustomerEditor editor) {
+    this.repository = repository;
     this.editor = editor;
     this.grid = new Grid();
     this.filter = new TextField();
-    this.addNewBtn = new Button("New customer", FontAwesome.PLUS);
+    this.buttonsNewRecord = new Button("New customer", FontAwesome.PLUS);
+    this.countryDefault = countryRepository.findAll().get(0);
   }
 
   @Override
   protected void init(VaadinRequest request) {
     // build layout
-    HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn);
+    HorizontalLayout actions = new HorizontalLayout(filter, buttonsNewRecord);
     VerticalLayout mainLayout = new VerticalLayout(actions, grid, editor);
     setContent(mainLayout);
 
@@ -51,16 +59,18 @@ public class VaadinUI extends UI {
     mainLayout.setMargin(true);
     mainLayout.setSpacing(true);
 
-    //repo
-    //List<Customer> customerDataSource = repo.findAll();
-    List<Customer> customerDataSource = repo.findByLastNameStartsWithIgnoreCase("russel");
+    //repository
+    List<Customer> customerDataSource = repository.findAll();
+    //List<Customer> customerDataSource = repository.findByLastNameStartsWithIgnoreCase("russel");
 
     //grid.setHeight(300, Unit.PIXELS);
     grid.setSizeFull();
     grid.setContainerDataSource(new BeanItemContainer(Customer.class, customerDataSource));
-    //Must be here after setContainerDataSource
-    grid.setColumnOrder("id", "firstName", "lastName", "bornIn", "email");
 
+    //Must be here after setContainerDataSource
+    grid.setColumnOrder("id", "firstName", "lastName", "bornIn", "email", "country");
+
+    //Assign PlaceHolder
     filter.setInputPrompt("Filter by last name");
 
     // Hook logic to components
@@ -79,7 +89,7 @@ public class VaadinUI extends UI {
     });
 
     // Instantiate and edit new Customer the new button is clicked
-    addNewBtn.addClickListener(e -> editor.editCustomer(new Customer("", "", new Date(), "")));
+    buttonsNewRecord.addClickListener(e -> editor.editCustomer(new Customer("", "", new Date(), "", countryDefault)));
 
     // Listen changes made by the editor, refresh data from backend
     editor.setChangeHandler(() -> {
@@ -91,15 +101,17 @@ public class VaadinUI extends UI {
     listCustomers(null);
   }
 
+  // List customers/Update ContainerDataSource
   private void listCustomers(String text) {
     if (StringUtils.isEmpty(text)) {
-      grid.setContainerDataSource(
-          new BeanItemContainer(Customer.class, repo.findAll()));
+      grid.setContainerDataSource(new BeanItemContainer(
+          Customer.class, repository.findAll()
+      ));
     }
     else {
-      grid.setContainerDataSource(new BeanItemContainer(Customer.class,
-          repo.findByLastNameStartsWithIgnoreCase(text)));
+      grid.setContainerDataSource(new BeanItemContainer(
+          Customer.class, repository.findByLastNameStartsWithIgnoreCase(text)
+      ));
     }
   }
-
 }

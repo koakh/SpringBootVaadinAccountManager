@@ -1,6 +1,9 @@
 package hello.ui;
 
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.*;
 import hello.model.country.Country;
 import hello.model.country.CountryRepository;
@@ -14,8 +17,6 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.themes.ValoTheme;
-
-import java.util.List;
 
 /**
  * A simple example to introduce building forms. As your real application is
@@ -44,6 +45,7 @@ public class CustomerEditor extends VerticalLayout {
   DateField bornIn = new DateField("Born In");
   TextField email = new TextField("Email");
   ComboBox country = new ComboBox("Select your country");
+  ComboBox comboBox = new ComboBox("Select value");;
 
   /* Action buttons */
   Button save = new Button("Save", FontAwesome.SAVE);
@@ -56,10 +58,36 @@ public class CustomerEditor extends VerticalLayout {
     this.customerRepository = customerRepository;
     this.countryRepository = countryRepository;
 
-    //TODO:
-    //country.setContainerDataSource(new BeanItemContainer(Customer.class, countryRepository.findAll()));
+    //TODO: Show Items country.getItemIds()
+    //https://vaadin.com/docs/-/part/framework/datamodel/datamodel-container.html
+    country.setContainerDataSource(new BeanItemContainer(Country.class, countryRepository.findAll()));
+//Country countryRecord = countryRepository.findAll().get(50);
+//country.setValue(countryRecord.getId());
+    //country.setItemCaption(countryRecord.getId(), countryRecord.getName());
+    // Use the name property for item captions
+    //country.setItemCaptionPropertyId("name");
+    country.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
+    country.setItemCaptionPropertyId("name");
 
-    addComponents(firstName, lastName, bornIn, email, actions);
+    country.setNullSelectionAllowed(false);
+    country.setFilteringMode(FilteringMode.CONTAINS);
+    //country.setValue(country.getItemIds().iterator().next());
+    //country.select(countryRecord.getId());
+    //country.getItemIds().iterator().next()
+    //https://vaadin.com/api/com/vaadin/ui/AbstractSelect.html#setValue-java.lang.Object-
+
+    // Create the selection component
+    //comboBox.addContainerProperty("name", Country.class, "'Bolivia'");
+    // Add some items (here by the item ID as the caption)
+    Object item = comboBox.addItem();
+    //item.getItemProperty("name").setValue("Sun");
+    // Access a property in the item
+    comboBox.addItems("Mercury", "Venus", "Earth", "Jupiter");
+    comboBox.setNullSelectionAllowed(false);
+    comboBox.setValue("Earth");
+
+    // Add components to VerticalLayout
+    addComponents(firstName, lastName, bornIn, email, country, comboBox, actions);
 
     // Configure and style components
     setSpacing(true);
@@ -75,25 +103,29 @@ public class CustomerEditor extends VerticalLayout {
   }
 
   public interface ChangeHandler {
-
     void onChange();
   }
 
-  public final void editCustomer(Customer c) {
-    final boolean persisted = c.getId() != null;
+  public final void editCustomer(Customer customer) {
+    final boolean persisted = customer.getId() != null;
+
     if (persisted) {
       // Find fresh entity for editing
-      customer = customerRepository.findOne(c.getId());
+      this.customer = customerRepository.findOne(customer.getId());
     }
     else {
-      customer = c;
+      this.customer = customer;
     }
     cancel.setVisible(persisted);
 
     // Bind customer properties to similarly named fields
     // Could also use annotation or "manual binding" or programmatically
     // moving values from fields to entities before saving
-    BeanFieldGroup.bindFieldsUnbuffered(customer, this);
+    BeanFieldGroup.bindFieldsUnbuffered(this.customer, this);
+
+    //Select country
+    country.select(this.customer);
+    comboBox.select("Venus");
 
     setVisible(true);
 

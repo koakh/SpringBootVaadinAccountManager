@@ -1,34 +1,60 @@
 package hello.model.country;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import hello.model.customer.Customer;
+import org.hibernate.annotations.NaturalId;
+import org.hibernate.id.GUIDGenerator;
+import org.yaml.snakeyaml.events.Event;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "country")
-public class Country {
+public class Country implements Serializable {
 
   @Id
   @GeneratedValue
-  private Long id;
+  Long id;
+  @NaturalId
+  UUID uuid = UUID.randomUUID();
   @NotNull
-  private String name;
+  String name;
   @NotNull
-  private String code2;
+  String code2;
+  @OneToMany(mappedBy = "country", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  private Set<Customer> Customers;
 
-  protected Country() {
-  }
+  // Required parametless constructor
+  protected Country() { }
 
   public Country(String name, String code2) {
     this.name = name;
     this.code2 = code2;
   }
 
+  //Business key equality : Implementing equals() and hashCode()
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Country)) return false;
+    Country book = (Country) o;
+    return Objects.equals(getId(), book.getId());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getId());
+  }
+
   public Long getId() {
     return id;
   }
+
+  public UUID getUuid() { return uuid; }
 
   public String getName() {
     return name;
@@ -44,11 +70,5 @@ public class Country {
 
   public void setCode2(String code2) {
     this.code2 = code2;
-  }
-
-  @Override
-  public String toString() {
-    return String.format("Country[id=%d, name='%s', code2='%s']",
-        id, name, code2);
   }
 }

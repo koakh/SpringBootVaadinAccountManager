@@ -18,6 +18,7 @@ public class Application {
 
   private static final Logger log = LoggerFactory.getLogger(Application.class);
 
+  //Inject Configuration Properties
   @Value("${spring.datasource.url}")
   private String datasourceUrl;
   @Value("${model.faker.records.customer}")
@@ -37,11 +38,11 @@ public class Application {
       log.info(String.format("datasourceUrl: %s", datasourceUrl));
 
       //Mock Data
-      if (customerRepository.count() == 0) {
-        CustomerFaker.fakeDate(customerRepository, apFakerRecordsCustomer);
-      }
       if (countryRepository.count() == 0) {
         CountryFaker.fakeDate(countryRepository, apFakerRecordsCountry);
+      }
+      if (customerRepository.count() == 0) {
+        CustomerFaker.fakeDate(customerRepository, countryRepository, apFakerRecordsCustomer);
       }
     };
   }
