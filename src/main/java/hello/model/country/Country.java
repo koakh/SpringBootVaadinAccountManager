@@ -20,14 +20,14 @@ public class Country extends BaseEntity {
 
   @Id
   @GeneratedValue
-  Long id;
+  private Long id;
   @NaturalId
-  UUID uuid = UUID.randomUUID();
+  private UUID uuid = UUID.randomUUID();
   @NotNull
-  String name;
+  private String name;
   @NotNull
-  String code2;
-  @OneToMany(mappedBy = "country", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  private String code2;
+  @OneToMany(mappedBy = "country", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private Set<Customer> Customers;
 
   // Required parametless constructor

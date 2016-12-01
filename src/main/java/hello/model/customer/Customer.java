@@ -20,7 +20,7 @@ public class Customer extends BaseEntity {
   @GeneratedValue
   private Long id;
   @NaturalId
-  UUID uuid = UUID.randomUUID();
+  private UUID uuid = UUID.randomUUID();
   @NotNull
   private String firstName;
   @NotNull

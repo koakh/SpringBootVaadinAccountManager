@@ -39,19 +39,19 @@ public class CustomerEditor extends VerticalLayout {
   private Customer customer;
 
   // Fields to edit properties in Customer entity
-  TextField firstName = new TextField("First name");
-  TextField lastName = new TextField("Last name");
-  DateField bornIn = new DateField("Born In");
-  TextField email = new TextField("Email");
-  ComboBox country = new ComboBox("Select Country");
-  ComboBox customerStatus = new ComboBox("Select Customer Status");;
+  private TextField firstName = new TextField("First name");
+  private TextField lastName = new TextField("Last name");
+  private DateField bornIn = new DateField("Born In");
+  private TextField email = new TextField("Email");
+  private ComboBox country = new ComboBox("Select Country");
+  private ComboBox status = new ComboBox("Select Customer Status");;
 
   // Action buttons
-  Button save = new Button("Save", FontAwesome.SAVE);
-  Button cancel = new Button("Cancel");
-  Button delete = new Button("Delete", FontAwesome.TRASH_O);
+  private Button save = new Button("Save", FontAwesome.SAVE);
+  private Button cancel = new Button("Cancel");
+  private Button delete = new Button("Delete", FontAwesome.TRASH_O);
   // Layout
-  CssLayout actions = new CssLayout(save, cancel, delete);
+  private CssLayout actions = new CssLayout(save, cancel, delete);
   // Config Buttons
   // TODO
   //save.setStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -91,11 +91,11 @@ public class CustomerEditor extends VerticalLayout {
     //comboBox.setValue("Earth");
 
     //Customer Status
-    customerStatus.addItems(CustomerStatus.values());
-    customerStatus.setNullSelectionAllowed(false);
+    status.addItems(CustomerStatus.values());
+    status.setNullSelectionAllowed(false);
 
     // Add components to VerticalLayout
-    addComponents(firstName, lastName, bornIn, email, country, customerStatus, actions);
+    addComponents(firstName, lastName, bornIn, email, country, status, actions);
 
     // Configure and style components
     setSpacing(true);

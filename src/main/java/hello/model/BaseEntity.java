@@ -13,13 +13,15 @@ import java.util.UUID;
  */
 public abstract class BaseEntity implements Serializable {
 
+  /*
   @Id
   @GeneratedValue
-  private Long id;
+  protected Long id;
   @NaturalId
-  private UUID uuid = UUID.randomUUID();
+  protected UUID uuid = UUID.randomUUID();
 
   //Business key equality : Implementing equals() and hashCode()
+  // Very important, ex remeber ComboBox problem...
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -40,4 +42,5 @@ public abstract class BaseEntity implements Serializable {
   public UUID getUuid() {
     return uuid;
   }
+  */
 }
