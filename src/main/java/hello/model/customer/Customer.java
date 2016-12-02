@@ -47,27 +47,7 @@ public class Customer extends BaseEntity {
     this.country = country;
   }
 
-  //Override ToString
-  @Override
-  public String toString() {
-    return String.format("Customer[id=%d, firstName='%s', lastName='%s', bornIn='%s', email='%s']",
-        id, firstName, lastName, bornIn, email);
-  }
-
-  //Business key equality : Implementing equals() and hashCode()
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof Customer)) return false;
-    Customer customer = (Customer) o;
-    return Objects.equals(getId(), customer.getId());
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(getId());
-  }
-
+  // Getter and Setters
   public Long getId() { return id; }
 
   public UUID getUuid() { return uuid; }
@@ -115,4 +95,45 @@ public class Customer extends BaseEntity {
   public CustomerStatus getStatus() { return status; }
 
   public void setStatus(CustomerStatus status) { this.status = status; }
+
+  // Helper Methods
+  public boolean isPersisted() {
+    return id != null;
+  }
+
+  //Override ToString
+  @Override
+  public String toString() {
+    return String.format("Customer[id=%d, uuid='%s', firstName='%s', lastName='%s', bornIn='%s', email='%s']",
+        id, uuid, firstName, lastName, bornIn, email);
+  }
+
+  //Business key equality : Implementing equals() and hashCode()
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (this.id == null) {
+      return false;
+    }
+
+    if (obj instanceof Customer && obj.getClass().equals(getClass())) {
+      return this.id.equals(((Customer) obj).id);
+    }
+
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 43 * hash + (id == null ? 0 : id.hashCode());
+    return hash;
+  }
+
+  @Override
+  public Customer clone() throws CloneNotSupportedException {
+    return (Customer) super.clone();
+  }
 }

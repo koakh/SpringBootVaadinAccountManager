@@ -37,7 +37,6 @@ public class CustomerEditor extends VerticalLayout {
    * The currently edited customer
    */
   private Customer customer;
-
   // Fields to edit properties in Customer entity
   private TextField firstName = new TextField("First name");
   private TextField lastName = new TextField("Last name");
@@ -45,22 +44,25 @@ public class CustomerEditor extends VerticalLayout {
   private TextField email = new TextField("Email");
   private ComboBox country = new ComboBox("Select Country");
   private ComboBox status = new ComboBox("Select Customer Status");;
-
   // Action buttons
   private Button save = new Button("Save", FontAwesome.SAVE);
   private Button cancel = new Button("Cancel");
   private Button delete = new Button("Delete", FontAwesome.TRASH_O);
   // Layout
   private CssLayout actions = new CssLayout(save, cancel, delete);
-  // Config Buttons
-  // TODO
-  //save.setStyleName(ValoTheme.BUTTON_PRIMARY);
-  //save.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 
   @Autowired
   public CustomerEditor(CustomerRepository customerRepository, CountryRepository countryRepository) {
+
     this.customerRepository = customerRepository;
     this.countryRepository = countryRepository;
+
+    // Configure Buttons
+    save.setStyleName(ValoTheme.BUTTON_PRIMARY);
+    delete.setStyleName(ValoTheme.BUTTON_DANGER);
+    // ShortcutActions
+    save.setClickShortcut(ShortcutAction.KeyCode.ENTER);
+    delete.setClickShortcut(ShortcutAction.KeyCode.ESCAPE);
 
     //TODO: Show Items country.getItemIds()
     //https://vaadin.com/docs/-/part/framework/datamodel/datamodel-container.html
@@ -130,6 +132,9 @@ public class CustomerEditor extends VerticalLayout {
     // Could also use annotation or "manual binding" or programmatically
     // moving values from fields to entities before saving
     BeanFieldGroup.bindFieldsUnbuffered(this.customer, this);
+
+    // Show delete button for only customers already in the database
+    delete.setVisible(customer.isPersisted());
 
     setVisible(true);
 

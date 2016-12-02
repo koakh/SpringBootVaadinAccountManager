@@ -38,20 +38,7 @@ public class Country extends BaseEntity {
     this.code2 = code2;
   }
 
-  //Business key equality : Implementing equals() and hashCode()
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof Country)) return false;
-    Country country = (Country) o;
-    return Objects.equals(getId(), country.getId());
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(getId());
-  }
-
+  // Getters and Setters
   public Long getId() { return id; }
 
   public UUID getUuid() { return uuid; }
@@ -70,5 +57,46 @@ public class Country extends BaseEntity {
 
   public void setCode2(String code2) {
     this.code2 = code2;
+  }
+
+  // Helper Methods
+  public boolean isPersisted() {
+    return id != null;
+  }
+
+  //Override ToString
+  @Override
+  public String toString() {
+    return String.format("Country[id=%d, uuid='%s', name='%s', code2='%s']",
+        id, uuid, name, code2);
+  }
+
+  //Business key equality : Implementing equals() and hashCode()
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (this.id == null) {
+      return false;
+    }
+
+    if (obj instanceof Country && obj.getClass().equals(getClass())) {
+      return this.id.equals(((Country) obj).id);
+    }
+
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 43 * hash + (id == null ? 0 : id.hashCode());
+    return hash;
+  }
+
+  @Override
+  public Customer clone() throws CloneNotSupportedException {
+    return (Customer) super.clone();
   }
 }

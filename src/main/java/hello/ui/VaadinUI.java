@@ -1,9 +1,9 @@
 package hello.ui;
 
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.ButtonRenderer;
+import com.vaadin.ui.themes.ValoTheme;
 import hello.Application;
 import hello.model.country.Country;
 import hello.model.country.CountryRepository;
@@ -31,9 +31,10 @@ public class VaadinUI extends UI {
   private static final Logger log = LoggerFactory.getLogger(Application.class);
 
   private final CustomerRepository repository;
-  private final CustomerEditor editor;
+  private final CustomerEditor customerEditor;
   private final Grid grid;
   private final TextField filter;
+  private final Button clearFilterTextBtn;
   private final Button buttonNewRecord;
   private final Button buttonsPopup;
   private final Country countryDefault;
@@ -47,11 +48,15 @@ public class VaadinUI extends UI {
     this.repository = repository;
     this.countryDefault = countryRepository.findAll().get(0);
     //Ui
-    this.editor = editor;
+    this.customerEditor = editor;
     this.grid = new Grid();
     this.filter = new TextField();
+    this.clearFilterTextBtn = new Button(FontAwesome.TIMES);
     this.buttonNewRecord = new Button("New customer", FontAwesome.PLUS);
     this.buttonsPopup =  new Button("Open popup", FontAwesome.PLUS);
+    // Changes some props of initialized componemts
+    grid.setSizeFull();
+    this.clearFilterTextBtn.setDescription("Clear the current filter");
   }
 
   @Override
@@ -78,23 +83,42 @@ public class VaadinUI extends UI {
       //accordionMenu.getTab(i - 1).setIcon(FontAwesome.ANDROID);
     }
 
-    // build content layout
-    HorizontalLayout actions = new HorizontalLayout(filter, buttonNewRecord, buttonsPopup);
-    VerticalLayout mainLayout = new VerticalLayout(actions, grid, editor);
-    mainLayout.setSizeFull();
+    // Box Filter and Clear Filter inside CssLayout, usefull in this case to group components in one component
+    CssLayout cssLayoutFiltering = new CssLayout();
+    cssLayoutFiltering.addComponents(filter, clearFilterTextBtn);
+    cssLayoutFiltering.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 
-    // Main Content
-    HorizontalLayout horizontalLayout = new HorizontalLayout(accordionMenu, mainLayout);
-    horizontalLayout.setMargin(true);
+    // Build horizontalLayoutToolbar
+    HorizontalLayout horizontalLayoutToolbar = new HorizontalLayout(cssLayoutFiltering, buttonNewRecord, buttonsPopup);
+//horizontalLayoutToolbar.setHeight(100.0f, Unit.PERCENTAGE);
+
+//HorizontalLayout main = new HorizontalLayout(grid, customerEditor);
+//main.setSpacing(true);
+//main.setSizeFull();
+//grid.setSizeFull();
+//main.setExpandRatio(grid, 1);
+
+    // Build verticalLayoutMainContent
+    VerticalLayout verticalLayoutMainContent = new VerticalLayout(horizontalLayoutToolbar, grid, customerEditor);
+    verticalLayoutMainContent.setSizeFull();
+    // Configure the grid to use all of the available space more efficiently.
+    verticalLayoutMainContent.setExpandRatio(grid, 1);
+
+    // Build Main Content
+    HorizontalLayout horizontalLayoutMainContent = new HorizontalLayout(accordionMenu, verticalLayoutMainContent);
+//horizontalLayoutMainContent.setMargin(true);
+    horizontalLayoutMainContent.setSizeFull();
+// Configure the verticalLayoutMainContent to use all of the available space more efficiently.
+horizontalLayoutMainContent.setExpandRatio(verticalLayoutMainContent, 1);
 
     // Set UI Content
-    //setContent(mainLayout);
-    setContent(horizontalLayout);
+    //setContent(verticalLayoutMainContent);
+    setContent(horizontalLayoutMainContent);
 
     // configure layouts and components
-    actions.setSpacing(true);
-    mainLayout.setMargin(true);
-    mainLayout.setSpacing(true);
+    horizontalLayoutToolbar.setSpacing(true);
+    verticalLayoutMainContent.setMargin(true);
+    verticalLayoutMainContent.setSpacing(true);
 
     // repository
     List<Customer> customerDataSource = repository.findAll();
@@ -134,24 +158,29 @@ buttonColumn.setRenderer(new ButtonRenderer(event -> showPopup()));
     // Replace listing with filtered content when user changes filter
     filter.addTextChangeListener(e -> listCustomers(e.getText()));
 
-    // Connect selected Customer to editor or hide if none is selected
+    clearFilterTextBtn.addClickListener(e -> {
+      filter.clear();
+      listCustomers(null);
+    });
+
+    // Connect selected Customer to customerEditor or hide if none is selected
     grid.addSelectionListener(e -> {
       if (e.getSelected().isEmpty()) {
-        editor.setVisible(false);
+        customerEditor.setVisible(false);
       }
       else {
-        editor.editCustomer((Customer) grid.getSelectedRow());
+        customerEditor.editCustomer((Customer) grid.getSelectedRow());
       }
     });
 
     // Instantiate and edit new Customer the new button is clicked
-    buttonNewRecord.addClickListener(e -> editor.editCustomer(new Customer("", "", new Date(), "", countryDefault)));
+    buttonNewRecord.addClickListener(e -> customerEditor.editCustomer(new Customer("", "", new Date(), "", countryDefault)));
 
     buttonsPopup.addClickListener(event -> showPopup());
 
-    // Listen changes made by the editor, refresh data from backend
-    editor.setChangeHandler(() -> {
-      editor.setVisible(false);
+    // Listen changes made by the customerEditor, refresh data from backend
+    customerEditor.setChangeHandler(() -> {
+      customerEditor.setVisible(false);
       listCustomers(filter.getValue());
     });
 
