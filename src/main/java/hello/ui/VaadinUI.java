@@ -1,5 +1,8 @@
 package hello.ui;
 
+import com.vaadin.data.Item;
+import com.vaadin.data.util.GeneratedPropertyContainer;
+import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.ButtonRenderer;
@@ -33,15 +36,15 @@ public class VaadinUI extends UI {
   private final CustomerRepository repository;
   private final CustomerEditor customerEditor;
   private final Grid grid;
-  private final TextField filter;
-  private final Button clearFilterTextBtn;
+  private final TextField textFieldFilter;
+  private final Button buttonClearFilter;
   private final Button buttonNewRecord;
   private final Button buttonsPopup;
   private final Country countryDefault;
   //TODO
   //Inject Configuration Properties
   @Value("${model.faker.records.country.default}")
-  private long countryDefaultId = 10L;
+  private long countryDefaultId;
 
   @Autowired
   public VaadinUI(CustomerRepository repository, CountryRepository countryRepository, CustomerEditor editor) {
@@ -49,14 +52,14 @@ public class VaadinUI extends UI {
     this.countryDefault = countryRepository.findAll().get(0);
     //Ui
     this.customerEditor = editor;
-    this.grid = new Grid();
-    this.filter = new TextField();
-    this.clearFilterTextBtn = new Button(FontAwesome.TIMES);
+    this.grid = null;
+    this.textFieldFilter = new TextField();
+    this.buttonClearFilter = new Button(FontAwesome.TIMES);
     this.buttonNewRecord = new Button("New customer", FontAwesome.PLUS);
     this.buttonsPopup =  new Button("Open popup", FontAwesome.PLUS);
-    // Changes some props of initialized componemts
-    grid.setSizeFull();
-    this.clearFilterTextBtn.setDescription("Clear the current filter");
+// Changes some props of initialized components
+//grid.setSizeFull();
+    this.buttonClearFilter.setDescription("Clear the current filter");
   }
 
   @Override
@@ -67,8 +70,6 @@ public class VaadinUI extends UI {
     accordionMenu.setWidth(200.0f, Unit.POINTS);
     accordionMenu.setHeight(100.0f, Unit.PERCENTAGE);
 
-//accordionMenu.getSelectedTab()
-//accordionMenu.setSelectedTab();
     for (int i = 0; i < 6; i++) {
       final VerticalLayout layout = new VerticalLayout();
       Button button1 = new Button("Button1");
@@ -85,7 +86,7 @@ public class VaadinUI extends UI {
 
     // Box Filter and Clear Filter inside CssLayout, usefull in this case to group components in one component
     CssLayout cssLayoutFiltering = new CssLayout();
-    cssLayoutFiltering.addComponents(filter, clearFilterTextBtn);
+    cssLayoutFiltering.addComponents(textFieldFilter, buttonClearFilter);
     cssLayoutFiltering.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 
     // Build horizontalLayoutToolbar
@@ -97,6 +98,128 @@ public class VaadinUI extends UI {
 //main.setSizeFull();
 //grid.setSizeFull();
 //main.setExpandRatio(grid, 1);
+
+
+
+
+    // Get customerDataSource from repository
+    List<Customer> customerDataSource = repository.findAll();
+    // Create BeanItemContainer
+    BeanItemContainer beanItemContainer = new BeanItemContainer(Customer.class, customerDataSource);
+    // Generate button caption column
+    GeneratedPropertyContainer generatedPropertyContainer = new GeneratedPropertyContainer(beanItemContainer);
+    // Add Edit GeneratedProperty to BeanItemContainer
+    generatedPropertyContainer.addGeneratedProperty("edit",
+        new PropertyValueGenerator<String>() {
+          @Override
+          public String getValue(Item item, Object itemId, Object propertyId) {
+            return "Edit"; // The caption
+          }
+          @Override
+          public Class<String> getType() {
+            return String.class;
+          }
+        }
+    );
+    // Add Delete GeneratedProperty to BeanItemContainer
+    generatedPropertyContainer.addGeneratedProperty("delete",
+        new PropertyValueGenerator<String>() {
+          @Override
+          public String getValue(Item item, Object itemId, Object propertyId) {
+            return "Delete"; // The caption
+          }
+          @Override
+          public Class<String> getType() {
+            return String.class;
+          }
+        }
+    );
+
+    // Create a grid, and assign container (SetContainerDataSource to generatedPropertyContainer with buttons)
+    Grid grid = new Grid(generatedPropertyContainer);
+    grid.setSizeFull();
+
+    // Call removeAllColumns before setContainerDataSource when want to reconfigure the columns based on new container
+    grid.removeAllColumns();
+    grid.addColumn("firstName");
+    grid.addColumn("lastName");
+    grid.addColumn("email");
+    grid.addColumn("edit");
+    grid.addColumn("delete");
+
+    // SetContainerDataSource to BeanItemContainer
+//removed setContainerDataSource is above in grid creation
+//grid.setContainerDataSource(beanItemContainer);
+
+    //grid.addColumn("delete");
+
+    // Render a button that deletes the data row (item)
+    grid.getColumn("edit")
+        .setRenderer(new ButtonRenderer(
+            e -> showPopup((Customer) e.getItemId()))
+        );
+    // Render a button that deletes the data row (item)
+    grid.getColumn("delete")
+        .setRenderer(new ButtonRenderer(
+            e -> grid.getContainerDataSource().removeItem(e.getItemId())
+        ));
+
+
+    // configure columns : grid.getColumns()
+/*
+    grid.getColumn("firstName").setHeaderCaption("First Name");
+    grid.getColumn("lastName").setHeaderCaption("Last Name");
+    grid.getColumn("bornIn").setHeaderCaption("Born In");
+    // hide columns
+//grid.removeColumn("id");
+    grid.removeColumn("uuid");
+    grid.removeColumn("email");
+    grid.removeColumn("country");
+    grid.removeColumn("status");
+    grid.removeColumn("persisted");
+    // Must be here after setContainerDataSource
+    // Columns that are not given for the method are placed after the specified columns in their natural order.
+    grid.setColumnOrder("firstName", "lastName", "bornIn");
+    //TODO
+    //6.24.8. Filtering
+    //TODO
+//grid.addColumn("id");
+Grid.Column buttonColumn = grid.getColumn("id");
+buttonColumn.setRenderer(new ButtonRenderer(event -> {
+  showPopup();
+  Notification.show("Editing item " + event.getItemId());
+}));
+
+*/
+
+
+//grid.addColumn("edit", FontIcon.class)
+//    .setRenderer(new FontIconRenderer(new ClickableRenderer.RendererClickListener() {
+//      @Override
+//      public void click(ClickableRenderer.RendererClickEvent e) {
+//        Notification.show("Editing item " + e.getItemId());
+//      }
+//    }));
+//
+//grid.addColumn("delete", FontIcon.class)
+//    .setRenderer(new FontIconRenderer(new ClickableRenderer.RendererClickListener() {
+//      @Override
+//      public void click(ClickableRenderer.RendererClickEvent e) {
+//        Notification.show("Deleted item " + e.getItemId());
+//      }
+//    }));
+
+//grid.getDefaultHeaderRow().join("edit", "delete").setText("Tools");
+
+    // TODO : Next Versions
+    // Limit the visible properties, configure the Grid using the setColumns method to only show "firstName", "lastName" and "email" properties.
+    //grid.setColumns("firstName", "lastName", "bornIn", "email");
+
+
+
+
+
+
 
     // Build verticalLayoutMainContent
     VerticalLayout verticalLayoutMainContent = new VerticalLayout(horizontalLayoutToolbar, grid, customerEditor);
@@ -120,46 +243,16 @@ horizontalLayoutMainContent.setExpandRatio(verticalLayoutMainContent, 1);
     verticalLayoutMainContent.setMargin(true);
     verticalLayoutMainContent.setSpacing(true);
 
-    // repository
-    List<Customer> customerDataSource = repository.findAll();
-
-    //grid.setHeight(300, Unit.PIXELS);
-    grid.setSizeFull();
-    grid.setContainerDataSource(new BeanItemContainer(Customer.class, customerDataSource));
-    // configure columns : grid.getColumns()
-    grid.getColumn("firstName").setHeaderCaption("First Name");
-    grid.getColumn("lastName").setHeaderCaption("Last Name");
-    grid.getColumn("bornIn").setHeaderCaption("Born In");
-    // hide columns
-//grid.removeColumn("id");
-    grid.removeColumn("uuid");
-    grid.removeColumn("email");
-    grid.removeColumn("country");
-    grid.removeColumn("status");
-    // Must be here after setContainerDataSource
-    // Columns that are not given for the method are placed after the specified columns in their natural order.
-    grid.setColumnOrder("firstName", "lastName", "bornIn");
-    //TODO
-    //6.24.8. Filtering
-    //TODO
-//grid.addColumn("id");
-Grid.Column buttonColumn = grid.getColumn("id");
-buttonColumn.setRenderer(new ButtonRenderer(event -> showPopup()));
-
-    // TODO : Next Versions
-    // Limit the visible properties, configure the Grid using the setColumns method to only show "firstName", "lastName" and "email" properties.
-    //grid.setColumns("firstName", "lastName", "bornIn", "email");
-
     // assign placeHolder
-    filter.setInputPrompt("Filter by Last Name");
+    textFieldFilter.setInputPrompt("Filter by Last Name");
 
     // Hook logic to components
 
     // Replace listing with filtered content when user changes filter
-    filter.addTextChangeListener(e -> listCustomers(e.getText()));
+    textFieldFilter.addTextChangeListener(e -> listCustomers(e.getText()));
 
-    clearFilterTextBtn.addClickListener(e -> {
-      filter.clear();
+    buttonClearFilter.addClickListener(e -> {
+      textFieldFilter.clear();
       listCustomers(null);
     });
 
@@ -176,16 +269,17 @@ buttonColumn.setRenderer(new ButtonRenderer(event -> showPopup()));
     // Instantiate and edit new Customer the new button is clicked
     buttonNewRecord.addClickListener(e -> customerEditor.editCustomer(new Customer("", "", new Date(), "", countryDefault)));
 
-    buttonsPopup.addClickListener(event -> showPopup());
+    buttonsPopup.addClickListener(event -> showPopup((Customer) grid.getSelectedRow()));
 
     // Listen changes made by the customerEditor, refresh data from backend
     customerEditor.setChangeHandler(() -> {
       customerEditor.setVisible(false);
-      listCustomers(filter.getValue());
+      listCustomers(textFieldFilter.getValue());
     });
 
     // Initialize listing
-    listCustomers(null);
+    //TODO
+//listCustomers(null);
   }
 
   // List customers/Update ContainerDataSource
@@ -202,15 +296,16 @@ buttonColumn.setRenderer(new ButtonRenderer(event -> showPopup()));
     }
   }
 
-  private void showPopup() {
+  private void showPopup(Customer item) {
+
+    log.info(item.toString());
 
     // Create a sub-window and set the content
     Window window = new Window("Sub-window");
     window.setDraggable(true);
     window.setResizable(false);
-    window.setCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
-    //window.setWidth(300.0f, Unit.PIXELS);
-    //window.setHeight(300.0f, Unit.PIXELS);
+    window.setWidth(300.0f, Unit.PIXELS);
+    window.setHeight(300.0f, Unit.PIXELS);
 
     //Vertical Content
     VerticalLayout subContent = new VerticalLayout();
@@ -218,7 +313,7 @@ buttonColumn.setRenderer(new ButtonRenderer(event -> showPopup()));
     window.setContent(subContent);
 
     // Put some components in it
-    subContent.addComponent(new Label("Meatball sub"));
+    subContent.addComponent(new Label(item.getFirstName()));
     subContent.addComponent(new Button("Awlright"));
 
     // Center it in the browser window

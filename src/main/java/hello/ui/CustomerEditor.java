@@ -1,6 +1,10 @@
 package hello.ui;
 
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.validator.BeanValidator;
+import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.*;
 import hello.model.country.Country;
@@ -46,7 +50,7 @@ public class CustomerEditor extends VerticalLayout {
   private ComboBox status = new ComboBox("Select Customer Status");;
   // Action buttons
   private Button save = new Button("Save", FontAwesome.SAVE);
-  private Button cancel = new Button("Cancel");
+  private Button cancel = new Button("Cancel", FontAwesome.TIMES);
   private Button delete = new Button("Delete", FontAwesome.TRASH_O);
   // Layout
   private CssLayout actions = new CssLayout(save, cancel, delete);
@@ -126,20 +130,31 @@ public class CustomerEditor extends VerticalLayout {
     else {
       this.customer = customer;
     }
+    // Show elete|Cancel button for only customers already in the database
+    delete.setVisible(customer.isPersisted());
     cancel.setVisible(persisted);
 
     // Bind customer properties to similarly named fields
     // Could also use annotation or "manual binding" or programmatically
     // moving values from fields to entities before saving
-    BeanFieldGroup.bindFieldsUnbuffered(this.customer, this);
+    //
+    // Bean validators are automatically created when using a BeanFieldGroup.
+    //
+    // Returns the bean field group used to make binding
+    //
+    // ((BeanItem) ((BeanFieldGroup) beanFieldGroup).itemDataSource).getItemPropertyIds()
+    Object beanFieldGroup = BeanFieldGroup.bindFieldsUnbuffered(this.customer, this);
 
-    // Show delete button for only customers already in the database
-    delete.setVisible(customer.isPersisted());
+    //TODO
+    // Add extra Validators
+    //firstName.addValidator(new RegexpValidator("/^(?:[\\u00c0-\\u01ffa-zA-Z'-]){2,}(?:\\s[\\u00c0-\\u01ffa-zA-Z'-]{2,})+$/i", true, "Error Message"));
 
+    // Show this Form
     setVisible(true);
 
     // A hack to ensure the whole form is visible
     save.focus();
+
     // Select all text in firstName field automatically
     firstName.selectAll();
   }

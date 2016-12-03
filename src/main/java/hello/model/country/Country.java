@@ -9,6 +9,7 @@ import org.yaml.snakeyaml.events.Event;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
@@ -24,8 +25,10 @@ public class Country extends BaseEntity {
   @NaturalId
   private UUID uuid = UUID.randomUUID();
   @NotNull
+  @Size(min=2, max=25)
   private String name;
   @NotNull
+  @Size(min=2, max=2)
   private String code2;
   @OneToMany(mappedBy = "country", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private Set<Customer> Customers;
