@@ -111,8 +111,13 @@ public class CustomerEditor extends VerticalLayout {
 
     // wire action buttons to save, delete and reset
     save.addClickListener(e -> customerRepository.save(customer));
-    delete.addClickListener(e -> customerRepository.delete(customer));
+    delete.addClickListener(e ->
+        //TODO : Required using getId()
+        customerRepository.delete(customer.getId())
+    );
     cancel.addClickListener(e -> editCustomer(customer));
+
+    //Show Form
     setVisible(false);
   }
 
@@ -160,8 +165,7 @@ public class CustomerEditor extends VerticalLayout {
   }
 
   public void setChangeHandler(ChangeHandler h) {
-    // ChangeHandler is notified when either save or delete
-    // is clicked
+    // ChangeHandler is notified when either save or delete is clicked
     save.addClickListener(e -> h.onChange());
     delete.addClickListener(e -> h.onChange());
   }

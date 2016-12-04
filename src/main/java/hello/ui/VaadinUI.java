@@ -15,7 +15,9 @@ import hello.model.customer.CustomerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 import com.vaadin.annotations.Theme;
@@ -29,6 +31,7 @@ import java.util.List;
 
 @SpringUI
 @Theme("valo")
+@Configuration
 public class VaadinUI extends UI {
 
   private static final Logger log = LoggerFactory.getLogger(Application.class);
@@ -57,8 +60,6 @@ public class VaadinUI extends UI {
     this.buttonClearFilter = new Button(FontAwesome.TIMES);
     this.buttonNewRecord = new Button("New customer", FontAwesome.PLUS);
     this.buttonsPopup =  new Button("Open popup", FontAwesome.PLUS);
-// Changes some props of initialized components
-//grid.setSizeFull();
     this.buttonClearFilter.setDescription("Clear the current filter");
   }
 
@@ -138,8 +139,7 @@ public class VaadinUI extends UI {
     // Create a grid, and assign container (SetContainerDataSource to generatedPropertyContainer with buttons)
     Grid grid = new Grid(generatedPropertyContainer);
     grid.setSizeFull();
-
-    // Call removeAllColumns before setContainerDataSource when want to reconfigure the columns based on new container
+    // Reconfigure columns, Model + New Properties
     grid.removeAllColumns();
     grid.addColumn("firstName");
     grid.addColumn("lastName");
@@ -151,17 +151,22 @@ public class VaadinUI extends UI {
 //removed setContainerDataSource is above in grid creation
 //grid.setContainerDataSource(beanItemContainer);
 
-    //grid.addColumn("delete");
-
-    // Render a button that deletes the data row (item)
+    // Render a button that edits the data row (item)
     grid.getColumn("edit")
         .setRenderer(new ButtonRenderer(
             e -> showPopup((Customer) e.getItemId()))
         );
     // Render a button that deletes the data row (item)
     grid.getColumn("delete")
-        .setRenderer(new ButtonRenderer(
-            e -> grid.getContainerDataSource().removeItem(e.getItemId())
+        .setRenderer(new ButtonRenderer(e ->
+            {
+                Customer customer = (Customer) e.getItemId();
+                // Remove from grid
+                grid.getContainerDataSource().removeItem(customer);
+                //Remove from Repository
+                //TODO : Required using getId()
+                repository.delete(customer.getId());
+            }
         ));
 
 
