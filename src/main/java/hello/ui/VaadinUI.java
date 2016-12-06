@@ -3,6 +3,7 @@ package hello.ui;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
+import com.vaadin.server.FontIcon;
 import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.ButtonRenderer;
 import com.vaadin.ui.themes.ValoTheme;
@@ -94,53 +95,6 @@ public class VaadinUI extends UI {
 
     // Build horizontalLayoutToolbar
     HorizontalLayout horizontalLayoutToolbar = new HorizontalLayout(cssLayoutFiltering, buttonNewRecord, buttonsPopup);
-//horizontalLayoutToolbar.setHeight(100.0f, Unit.PERCENTAGE);
-
-//HorizontalLayout main = new HorizontalLayout(grid, customerEditor);
-//main.setSpacing(true);
-//main.setSizeFull();
-//grid.setSizeFull();
-//main.setExpandRatio(grid, 1);
-
-
-
-/*
-    // Get customerDataSource from customerRepository and init customerDataSource
-//List<Customer>
-customerDataSource = customerRepository.findAll();
-    // Create BeanItemContainer
-//BeanItemContainer
-beanItemContainer = new BeanItemContainer(Customer.class, customerDataSource);
-    // Generate button caption column
-    GeneratedPropertyContainer generatedPropertyContainer = new GeneratedPropertyContainer(beanItemContainer);
-
-    // Add Edit GeneratedProperty to BeanItemContainer
-    generatedPropertyContainer.addGeneratedProperty("edit",
-        new PropertyValueGenerator<String>() {
-          @Override
-          public String getValue(Item item, Object itemId, Object propertyId) {
-            return "Edit"; // The caption
-          }
-          @Override
-          public Class<String> getType() {
-            return String.class;
-          }
-        }
-    );
-    // Add Delete GeneratedProperty to BeanItemContainer
-    generatedPropertyContainer.addGeneratedProperty("delete",
-        new PropertyValueGenerator<String>() {
-          @Override
-          public String getValue(Item item, Object itemId, Object propertyId) {
-            return "Delete"; // The caption
-          }
-          @Override
-          public Class<String> getType() {
-            return String.class;
-          }
-        }
-    );
-*/
 
     // Start with a GeneratedPropertyContainer with all customers from repository
     GeneratedPropertyContainer generatedPropertyContainer = getGeneratedPropertyContainer(customerRepository.findAll());
@@ -158,7 +112,6 @@ beanItemContainer = new BeanItemContainer(Customer.class, customerDataSource);
     // Configure columns : grid.getColumns()
     grid.getColumn("firstName").setHeaderCaption("First Name");
     grid.getColumn("lastName").setHeaderCaption("Last Name");
-    grid.getColumn("bornIn").setHeaderCaption("Born In");
     // Join Action Columns
     grid.getDefaultHeaderRow().join("edit", "delete").setText("Actions");
 
@@ -181,54 +134,21 @@ beanItemContainer = new BeanItemContainer(Customer.class, customerDataSource);
             }
         )).setWidth(100);
 
-    // configure columns : grid.getColumns()
-/*
-    grid.getColumn("firstName").setHeaderCaption("First Name");
-    grid.getColumn("lastName").setHeaderCaption("Last Name");
-    grid.getColumn("bornIn").setHeaderCaption("Born In");
-    // hide columns
-//grid.removeColumn("id");
-    grid.removeColumn("uuid");
-    grid.removeColumn("email");
-    grid.removeColumn("country");
-    grid.removeColumn("status");
-    grid.removeColumn("persisted");
-    // Must be here after setContainerDataSource
-    // Columns that are not given for the method are placed after the specified columns in their natural order.
-    grid.setColumnOrder("firstName", "lastName", "bornIn");
-    //TODO
-    //6.24.8. Filtering
-    //TODO
-//grid.addColumn("id");
-Grid.Column buttonColumn = grid.getColumn("id");
-buttonColumn.setRenderer(new ButtonRenderer(event -> {
-  showPopup();
-  Notification.show("Editing item " + event.getItemId());
-}));
-
-*/
-
-
-//grid.addColumn("edit", FontIcon.class)
-//    .setRenderer(new FontIconRenderer(new ClickableRenderer.RendererClickListener() {
-//      @Override
-//      public void click(ClickableRenderer.RendererClickEvent e) {
-//        Notification.show("Editing item " + e.getItemId());
-//      }
-//    }));
-//
-//grid.addColumn("delete", FontIcon.class)
-//    .setRenderer(new FontIconRenderer(new ClickableRenderer.RendererClickListener() {
-//      @Override
-//      public void click(ClickableRenderer.RendererClickEvent e) {
-//        Notification.show("Deleted item " + e.getItemId());
-//      }
-//    }));
-
-
-    // TODO : Next Versions
-    // Limit the visible properties, configure the Grid using the setColumns method to only show "firstName", "lastName" and "email" properties.
-    //grid.setColumns("firstName", "lastName", "bornIn", "email");
+    //grid.addColumn("edit", FontIcon.class)
+    //    .setRenderer(new FontIconRenderer(new ClickableRenderer.RendererClickListener() {
+    //      @Override
+    //      public void click(ClickableRenderer.RendererClickEvent e) {
+    //        Notification.show("Editing item " + e.getItemId());
+    //      }
+    //    }));
+    //
+    //grid.addColumn("delete", FontIcon.class)
+    //    .setRenderer(new FontIconRenderer(new ClickableRenderer.RendererClickListener() {
+    //      @Override
+    //      public void click(ClickableRenderer.RendererClickEvent e) {
+    //        Notification.show("Deleted item " + e.getItemId());
+    //      }
+    //    }));
 
     // Build verticalLayoutMainContent
     VerticalLayout verticalLayoutMainContent = new VerticalLayout(horizontalLayoutToolbar, grid, customerEditor);
@@ -267,9 +187,9 @@ buttonColumn.setRenderer(new ButtonRenderer(event -> {
     // Connect selected Customer to customerEditor or hide if none is selected
     grid.addSelectionListener(e -> {
 
-    //TODO : Remove this Comment
-    //Fix for You are using toString() instead of getValue()
-    //Customer selected = (Customer) e.getSelected().iterator().next();
+      //TODO : Remove this Comment
+      //Fix for You are using toString() instead of getValue()
+      //Customer selected = (Customer) e.getSelected().iterator().next();
 
       if (e.getSelected().isEmpty()) {
         customerEditor.setVisible(false);
