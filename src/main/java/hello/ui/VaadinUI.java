@@ -6,6 +6,7 @@ import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.server.FontIcon;
 import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.ButtonRenderer;
+import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import hello.Application;
 import hello.model.country.Country;
@@ -240,6 +241,20 @@ public class VaadinUI extends UI {
           }
         }
     );
+
+    //http://stackoverflow.com/questions/29922292/fill-buttons-in-grid-with-fontawesome-icons-and-add-tooltips-to-them
+    //https://github.com/FokkeZB/IconFont/blob/master/test/font-awesome.tss
+    //generatedPropertyContainer.addGeneratedProperty("edit", new PropertyValueGenerator<String>() {
+    //  @Override
+    //  public String getValue(Item item, Object itemId, Object propertyId) {
+    //    return FontAwesome.WARNING.getHtml();
+    //  }
+    //
+    //  @Override
+    //  public Class<String> getType() {
+    //    return String.class;
+    //  }
+    //});
 
     // Add Delete GeneratedProperty to BeanItemContainer
     generatedPropertyContainer.addGeneratedProperty("delete",
