@@ -110,6 +110,7 @@ public class VaadinUI extends UI {
     BeanItemContainer beanItemContainer = new BeanItemContainer(Customer.class, customerDataSource);
     // Generate button caption column
     GeneratedPropertyContainer generatedPropertyContainer = new GeneratedPropertyContainer(beanItemContainer);
+
     // Add Edit GeneratedProperty to BeanItemContainer
     generatedPropertyContainer.addGeneratedProperty("edit",
         new PropertyValueGenerator<String>() {
@@ -147,16 +148,19 @@ public class VaadinUI extends UI {
     grid.addColumn("email");
     grid.addColumn("edit");
     grid.addColumn("delete");
+    //Join Columns
+    grid.getDefaultHeaderRow().join("edit", "delete").setText("Actions");
 
+    //TODO: Remove Comment
     // SetContainerDataSource to BeanItemContainer
-//removed setContainerDataSource is above in grid creation
-//grid.setContainerDataSource(beanItemContainer);
+    //removed setContainerDataSource is above in grid creation
+    //grid.setContainerDataSource(beanItemContainer);
 
     // Render a button that edits the data row (item)
     grid.getColumn("edit")
         .setRenderer(new ButtonRenderer(
             e -> showPopup((Customer) e.getItemId()))
-        );
+        ).setWidth(100);
     // Render a button that deletes the data row (item)
     grid.getColumn("delete")
         .setRenderer(new ButtonRenderer(e ->
@@ -168,8 +172,7 @@ public class VaadinUI extends UI {
                 //TODO : Required using getId()
                 repository.delete(customer.getId());
             }
-        ));
-
+        )).setWidth(100);
 
     // configure columns : grid.getColumns()
 /*
@@ -215,17 +218,10 @@ buttonColumn.setRenderer(new ButtonRenderer(event -> {
 //      }
 //    }));
 
-//grid.getDefaultHeaderRow().join("edit", "delete").setText("Tools");
 
     // TODO : Next Versions
     // Limit the visible properties, configure the Grid using the setColumns method to only show "firstName", "lastName" and "email" properties.
     //grid.setColumns("firstName", "lastName", "bornIn", "email");
-
-
-
-
-
-
 
     // Build verticalLayoutMainContent
     VerticalLayout verticalLayoutMainContent = new VerticalLayout(horizontalLayoutToolbar, grid, customerEditor);
@@ -235,10 +231,9 @@ buttonColumn.setRenderer(new ButtonRenderer(event -> {
 
     // Build Main Content
     HorizontalLayout horizontalLayoutMainContent = new HorizontalLayout(accordionMenu, verticalLayoutMainContent);
-//horizontalLayoutMainContent.setMargin(true);
     horizontalLayoutMainContent.setSizeFull();
-// Configure the verticalLayoutMainContent to use all of the available space more efficiently.
-horizontalLayoutMainContent.setExpandRatio(verticalLayoutMainContent, 1);
+    // Configure the verticalLayoutMainContent to use all of the available space more efficiently.
+    horizontalLayoutMainContent.setExpandRatio(verticalLayoutMainContent, 1);
 
     // Set UI Content
     //setContent(verticalLayoutMainContent);
@@ -265,10 +260,11 @@ horizontalLayoutMainContent.setExpandRatio(verticalLayoutMainContent, 1);
     // Connect selected Customer to customerEditor or hide if none is selected
     grid.addSelectionListener(e -> {
 
-//Fix for You are using toString() instead of getValue()
-Customer selected = (Customer) e.getSelected().iterator().next();
+    //TODO : Remove this Comment
+    //Fix for You are using toString() instead of getValue()
+    //Customer selected = (Customer) e.getSelected().iterator().next();
 
-if (/*e.getSelected().isEmpty()*/ selected.toString().isEmpty()) {
+      if (e.getSelected().isEmpty()) {
         customerEditor.setVisible(false);
       }
       else {

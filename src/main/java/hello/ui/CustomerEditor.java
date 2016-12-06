@@ -47,7 +47,7 @@ public class CustomerEditor extends VerticalLayout {
   private DateField bornIn = new DateField("Born In");
   private TextField email = new TextField("Email");
   private ComboBox country = new ComboBox("Select Country");
-  private ComboBox status = new ComboBox("Select Customer Status");;
+  private ComboBox status = new ComboBox("Select Customer Status");
   // Action buttons
   private Button save = new Button("Save", FontAwesome.SAVE);
   private Button cancel = new Button("Cancel", FontAwesome.TIMES);
