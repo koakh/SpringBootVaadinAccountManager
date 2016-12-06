@@ -31,6 +31,7 @@ import java.util.List;
 
 @SpringUI
 @Theme("valo")
+//TODO: Use @Configuration does nothing
 @Configuration
 public class VaadinUI extends UI {
 
@@ -263,7 +264,11 @@ horizontalLayoutMainContent.setExpandRatio(verticalLayoutMainContent, 1);
 
     // Connect selected Customer to customerEditor or hide if none is selected
     grid.addSelectionListener(e -> {
-      if (e.getSelected().isEmpty()) {
+
+//Fix for You are using toString() instead of getValue()
+Customer selected = (Customer) e.getSelected().iterator().next();
+
+if (/*e.getSelected().isEmpty()*/ selected.toString().isEmpty()) {
         customerEditor.setVisible(false);
       }
       else {

@@ -135,7 +135,7 @@ public class CustomerEditor extends VerticalLayout {
     else {
       this.customer = customer;
     }
-    // Show elete|Cancel button for only customers already in the database
+    // Show DDelete|Cancel button for only customers already in the database
     delete.setVisible(customer.isPersisted());
     cancel.setVisible(persisted);
 
