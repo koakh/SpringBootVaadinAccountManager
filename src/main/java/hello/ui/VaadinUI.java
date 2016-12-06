@@ -3,7 +3,6 @@ package hello.ui;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.ButtonRenderer;
 import com.vaadin.ui.themes.ValoTheme;
@@ -15,9 +14,7 @@ import hello.model.customer.CustomerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 import com.vaadin.annotations.Theme;
@@ -31,19 +28,21 @@ import java.util.List;
 
 @SpringUI
 @Theme("valo")
-//TODO: Use @Configuration does nothing
-@Configuration
 public class VaadinUI extends UI {
 
   private static final Logger log = LoggerFactory.getLogger(Application.class);
 
-  private final CustomerRepository repository;
+  // Repositories
+  private final CustomerRepository customerRepository;
   private final CustomerEditor customerEditor;
-  private final Grid grid;
+  // UI Components
+  private Grid grid;
   private final TextField textFieldFilter;
+  // Actions
   private final Button buttonClearFilter;
   private final Button buttonNewRecord;
   private final Button buttonsPopup;
+  // Defaults
   private final Country countryDefault;
   //TODO
   //Inject Configuration Properties
@@ -51,8 +50,10 @@ public class VaadinUI extends UI {
   private long countryDefaultId;
 
   @Autowired
-  public VaadinUI(CustomerRepository repository, CountryRepository countryRepository, CustomerEditor editor) {
-    this.repository = repository;
+  public VaadinUI(CustomerRepository customerRepository, CountryRepository countryRepository, CustomerEditor editor) {
+    //Repositories
+    this.customerRepository = customerRepository;
+    // Get First Country
     this.countryDefault = countryRepository.findAll().get(0);
     //Ui
     this.customerEditor = editor;
@@ -103,11 +104,13 @@ public class VaadinUI extends UI {
 
 
 
-
-    // Get customerDataSource from repository
-    List<Customer> customerDataSource = repository.findAll();
+/*
+    // Get customerDataSource from customerRepository and init customerDataSource
+//List<Customer>
+customerDataSource = customerRepository.findAll();
     // Create BeanItemContainer
-    BeanItemContainer beanItemContainer = new BeanItemContainer(Customer.class, customerDataSource);
+//BeanItemContainer
+beanItemContainer = new BeanItemContainer(Customer.class, customerDataSource);
     // Generate button caption column
     GeneratedPropertyContainer generatedPropertyContainer = new GeneratedPropertyContainer(beanItemContainer);
 
@@ -137,9 +140,13 @@ public class VaadinUI extends UI {
           }
         }
     );
+*/
 
-    // Create a grid, and assign container (SetContainerDataSource to generatedPropertyContainer with buttons)
-    Grid grid = new Grid(generatedPropertyContainer);
+    // Start with a GeneratedPropertyContainer with all customers from repository
+    GeneratedPropertyContainer generatedPropertyContainer = getGeneratedPropertyContainer(customerRepository.findAll());
+
+    // Create a grid, and assign GeneratedPropertyContainer (SetContainerDataSource to generatedPropertyContainer with buttons)
+    grid = new Grid(generatedPropertyContainer);
     grid.setSizeFull();
     // Reconfigure columns, Model + New Properties
     grid.removeAllColumns();
@@ -148,19 +155,19 @@ public class VaadinUI extends UI {
     grid.addColumn("email");
     grid.addColumn("edit");
     grid.addColumn("delete");
-    //Join Columns
+    // Configure columns : grid.getColumns()
+    grid.getColumn("firstName").setHeaderCaption("First Name");
+    grid.getColumn("lastName").setHeaderCaption("Last Name");
+    grid.getColumn("bornIn").setHeaderCaption("Born In");
+    // Join Action Columns
     grid.getDefaultHeaderRow().join("edit", "delete").setText("Actions");
-
-    //TODO: Remove Comment
-    // SetContainerDataSource to BeanItemContainer
-    //removed setContainerDataSource is above in grid creation
-    //grid.setContainerDataSource(beanItemContainer);
 
     // Render a button that edits the data row (item)
     grid.getColumn("edit")
         .setRenderer(new ButtonRenderer(
             e -> showPopup((Customer) e.getItemId()))
         ).setWidth(100);
+
     // Render a button that deletes the data row (item)
     grid.getColumn("delete")
         .setRenderer(new ButtonRenderer(e ->
@@ -170,7 +177,7 @@ public class VaadinUI extends UI {
                 grid.getContainerDataSource().removeItem(customer);
                 //Remove from Repository
                 //TODO : Required using getId()
-                repository.delete(customer.getId());
+                customerRepository.delete(customer.getId());
             }
         )).setWidth(100);
 
@@ -288,18 +295,65 @@ buttonColumn.setRenderer(new ButtonRenderer(event -> {
 //listCustomers(null);
   }
 
+  /**
+   * Generate GeneratedPropertyContainer for grid, with custom columns
+   * @param customerDataSource
+   * @return
+   */
+  private GeneratedPropertyContainer getGeneratedPropertyContainer(List<Customer> customerDataSource) {
+
+    // Get BeanItemContainer from DataSource
+    BeanItemContainer beanItemContainer = new BeanItemContainer(Customer.class, customerDataSource);
+    // Init GeneratedPropertyContainer, to store BeanItemContainer with custom Generated Properties
+    GeneratedPropertyContainer generatedPropertyContainer = new GeneratedPropertyContainer(beanItemContainer);
+
+    // Add Edit GeneratedProperty to BeanItemContainer
+    generatedPropertyContainer.addGeneratedProperty("edit",
+        new PropertyValueGenerator<String>() {
+          @Override
+          public String getValue(Item item, Object itemId, Object propertyId) {
+            return "Edit"; // The caption
+          }
+          @Override
+          public Class<String> getType() {
+            return String.class;
+          }
+        }
+    );
+
+    // Add Delete GeneratedProperty to BeanItemContainer
+    generatedPropertyContainer.addGeneratedProperty("delete",
+        new PropertyValueGenerator<String>() {
+          @Override
+          public String getValue(Item item, Object itemId, Object propertyId) {
+            return "Delete"; // The caption
+          }
+          @Override
+          public Class<String> getType() {
+            return String.class;
+          }
+        }
+    );
+
+    return generatedPropertyContainer;
+  }
+
   // List customers/Update ContainerDataSource
   private void listCustomers(String text) {
+
+    List<Customer> customerDataSource;
+
     if (StringUtils.isEmpty(text)) {
-      grid.setContainerDataSource(new BeanItemContainer(
-          Customer.class, repository.findAll()
-      ));
+      customerDataSource = customerRepository.findAll();
     }
     else {
-      grid.setContainerDataSource(new BeanItemContainer(
-          Customer.class, repository.findByLastNameStartsWithIgnoreCase(text)
-      ));
+      customerDataSource = customerRepository.findByLastNameStartsWithIgnoreCase(text);
     }
+
+    // Update GeneratedPropertyContainer with customers from customerDataSource
+    GeneratedPropertyContainer generatedPropertyContainer = getGeneratedPropertyContainer(customerDataSource);
+    // Update Grid ContainerDataSource to the custom GeneratedPropertyContainer
+    grid.setContainerDataSource(generatedPropertyContainer);
   }
 
   private void showPopup(Customer item) {
