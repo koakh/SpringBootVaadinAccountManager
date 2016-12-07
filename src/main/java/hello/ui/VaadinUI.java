@@ -3,6 +3,7 @@ package hello.ui;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.server.FontIcon;
 import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.ButtonRenderer;
@@ -13,6 +14,8 @@ import hello.model.country.Country;
 import hello.model.country.CountryRepository;
 import hello.model.customer.Customer;
 import hello.model.customer.CustomerRepository;
+import hello.view.MainView;
+import hello.view.StartView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,14 @@ import java.util.List;
 public class VaadinUI extends UI {
 
   private static final Logger log = LoggerFactory.getLogger(Application.class);
+
+  // Application
+  @Value("${app.name}")
+  private String appName;
+
+  // Navigator
+  private Navigator navigator;
+public static final String MAINVIEW = "main";
 
   // Repositories
   private final CustomerRepository customerRepository;
@@ -69,6 +80,8 @@ public class VaadinUI extends UI {
 
   @Override
   protected void init(VaadinRequest request) {
+
+    initNavigator();
 
     // AccordionMenu
     Accordion accordionMenu = new Accordion();
@@ -214,6 +227,17 @@ public class VaadinUI extends UI {
     // Initialize listing
     //TODO
 //listCustomers(null);
+  }
+
+  private void initNavigator() {
+    getPage().setTitle(appName);
+
+    // Create a navigator to control the views
+    navigator = new Navigator(this, this);
+
+    // Create and register the views
+    navigator.addView("", new StartView(navigator));
+    navigator.addView(MAINVIEW, new MainView(navigator));
   }
 
   /**
