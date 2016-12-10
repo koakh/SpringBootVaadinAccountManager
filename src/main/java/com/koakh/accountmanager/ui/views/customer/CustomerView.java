@@ -7,9 +7,6 @@ import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.FontIcon;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.koakh.accountmanager.Application;
@@ -17,7 +14,6 @@ import com.koakh.accountmanager.ui.forms.CustomerForm;
 import com.koakh.accountmanager.model.country.Country;
 import com.koakh.accountmanager.model.customer.Customer;
 import com.koakh.accountmanager.model.customer.CustomerRepository;
-import com.koakh.accountmanager.ui.forms.CustomerEditor;
 import com.vaadin.ui.renderers.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.slf4j.Logger;
@@ -45,6 +41,7 @@ public class CustomerView extends VerticalLayout implements View {
   // Actions
   private Button buttonClearFilter;
   private Button buttonNewRecord;
+  private Button buttonRefresh;
   private Button buttonsPopup;
   // Defaults
   private Country countryDefault;
@@ -63,7 +60,8 @@ public class CustomerView extends VerticalLayout implements View {
     // Compose Toolbar UI Objects
     textFieldFilter = new TextField();
     buttonClearFilter = new Button("Clear filter", FontAwesome.TIMES);
-    buttonNewRecord = new Button("New customer", FontAwesome.PLUS);
+    buttonNewRecord = new Button("New", FontAwesome.PLUS);
+    buttonRefresh = new Button("Refresh", FontAwesome.REFRESH);
     // Assign placeHolder, used here for using method setInputPrompt only
     textFieldFilter.setInputPrompt("Filter by Last Name");
 
@@ -73,7 +71,7 @@ public class CustomerView extends VerticalLayout implements View {
     cssLayoutFiltering.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 
     // Build horizontalLayoutToolbar to pack Toolbar UI Objects
-    HorizontalLayout horizontalLayoutToolbar = new HorizontalLayout(cssLayoutFiltering, buttonNewRecord);
+    HorizontalLayout horizontalLayoutToolbar = new HorizontalLayout(cssLayoutFiltering, buttonNewRecord, buttonRefresh);
     horizontalLayoutToolbar.setSpacing(true);
 
     // Start with a GeneratedPropertyContainer with all customers from repository, with custom properties(columns) added to model for action buttons
@@ -99,13 +97,18 @@ public class CustomerView extends VerticalLayout implements View {
     // Render a button that edits the data row (item)
     grid.getColumn("edit")
     .setRenderer(new ButtonRenderer(
-        e -> showPopup((Customer) e.getItemId()))
+        e -> {
+          //Notification.show("Clicked " + grid.getContainerDataSource().getContainerProperty(e.getItemId(), "firstName"));
+          showPopup((Customer) e.getItemId());
+        })
+
     ).setWidth(100).setResizable(false);
 
     // Render a button that deletes the data row (item)
     grid.getColumn("delete")
         .setRenderer(new ButtonRenderer(e ->
         {
+          //Notification.show("Clicked " + grid.getContainerDataSource().getContainerProperty(e.getItemId(), "firstName"));
           Customer customer = (Customer) e.getItemId();
           // Remove from grid
           grid.getContainerDataSource().removeItem(customer);
@@ -165,7 +168,10 @@ public class CustomerView extends VerticalLayout implements View {
     });
 
     // Instantiate and edit new Customer the new button is clicked
+//TODO: Add new record Button
 //buttonNewRecord.addClickListener(e -> customerEditor.editCustomer(new Customer("", "", new Date(), "", countryDefault)));
+//buttonRefresh.addClickListener(e -> customerEditor.editCustomer(new Customer("", "", new Date(), "", countryDefault)));
+
 
 //buttonsPopup.addClickListener(e -> showPopup((Customer) grid.getSelectedRow()));
 
@@ -268,6 +274,17 @@ public class CustomerView extends VerticalLayout implements View {
           }
         }
     );
+
+    //generatedPropertyContainer.addGeneratedProperty("edit", new PropertyValueGenerator<Component>() {
+    //  public Component getValue(Item item, Object itemId, Object propertyId) {
+    //    HorizontalLayout component = new HorizontalLayout();
+    //    Button earlyButton = new Button(null, new ThemeResource("images/clock.png"));
+    //    Button publishButton = new Button(null, new ThemeResource("images/publish.png"));
+    //    component.addComponents(new Button(FontAwesome.SAVE),earlyButton , publishButton);
+    //    return component;
+    //  }
+    //  public Class<Component> getType() { return Component.class; }
+    //});
 
     return generatedPropertyContainer;
   }
