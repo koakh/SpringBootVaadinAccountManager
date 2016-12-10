@@ -1,5 +1,6 @@
 package com.koakh.accountmanager.ui.views.customer;
 
+import com.koakh.accountmanager.ui.renderers.FontIconRenderer;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
@@ -7,6 +8,7 @@ import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.FontIcon;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.koakh.accountmanager.Application;
@@ -117,6 +119,10 @@ public class CustomerView extends VerticalLayout implements View {
           customerRepository.delete(customer.getId());
         }
         )).setWidth(100).setResizable(false);
+
+
+    //grid.getColumn("delete").setRenderer(new FontIconRenderer(e -> Notification.show("Deleted item " + e.getItemId())));
+
 
     /*
     grid.addColumn("edit", FontIcon.class)
