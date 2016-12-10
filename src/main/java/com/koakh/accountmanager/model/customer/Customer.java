@@ -1,22 +1,18 @@
-package hello.model.customer;
+package com.koakh.accountmanager.model.customer;
 
-import hello.model.BaseEntity;
-import hello.model.country.Country;
+import com.koakh.accountmanager.model.country.Country;
 import org.hibernate.annotations.NaturalId;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
 import java.util.Date;
-import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Table(name = "customer")
-public class Customer extends BaseEntity {
+public class Customer /*extends BaseEntity*/ {
 
   @Id
   @GeneratedValue

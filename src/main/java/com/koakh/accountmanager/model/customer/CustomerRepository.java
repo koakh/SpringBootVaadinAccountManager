@@ -1,4 +1,4 @@
-package hello.model.customer;
+package com.koakh.accountmanager.model.customer;
 
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

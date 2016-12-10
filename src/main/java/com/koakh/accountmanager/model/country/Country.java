@@ -1,23 +1,17 @@
-package hello.model.country;
+package com.koakh.accountmanager.model.country;
 
-import hello.model.BaseEntity;
-import hello.model.customer.Customer;
+import com.koakh.accountmanager.model.customer.Customer;
 import org.hibernate.annotations.NaturalId;
-import org.hibernate.id.GUIDGenerator;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.yaml.snakeyaml.events.Event;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
 @Entity
 @Table(name = "country")
-public class Country extends BaseEntity {
+public class Country /*extends BaseEntity*/ {
 
   @Id
   @GeneratedValue

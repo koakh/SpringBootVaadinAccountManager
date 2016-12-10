@@ -1,106 +1,88 @@
-package hello.ui;
+package com.koakh.accountmanager.ui.views.customer;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.server.FontIcon;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
-import com.vaadin.ui.renderers.ButtonRenderer;
-import com.vaadin.ui.renderers.HtmlRenderer;
-import com.vaadin.ui.themes.ValoTheme;
-import hello.Application;
-import hello.model.country.Country;
-import hello.model.country.CountryRepository;
-import hello.model.customer.Customer;
-import hello.model.customer.CustomerRepository;
-import hello.view.MainView;
-import hello.view.StartView;
+import com.koakh.accountmanager.Application;
+import com.koakh.accountmanager.ui.forms.CustomerForm;
+import com.koakh.accountmanager.model.country.Country;
+import com.koakh.accountmanager.model.customer.Customer;
+import com.koakh.accountmanager.model.customer.CustomerRepository;
+import com.koakh.accountmanager.ui.forms.CustomerEditor;
+import com.koakh.accountmanager.ui.views.IViewNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 
-import com.vaadin.annotations.Theme;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.spring.annotation.SpringUI;
-
-import java.util.Date;
+import javax.annotation.PostConstruct;
 import java.util.List;
 
-@SpringUI
-@Theme("valo")
-public class VaadinUI extends UI {
+/**
+ * Created by mario on 07/12/2016.
+ */
+//@SpringView(name = IViewNames.CUSTOMER)
+@SpringView(name = CustomerView.VIEW_NAME)
+public class CustomerView extends VerticalLayout implements View {
+  public static final String VIEW_NAME = "customer";
 
   private static final Logger log = LoggerFactory.getLogger(Application.class);
 
-  // Application
-  @Value("${app.name}")
-  private String appName;
-
-  // Navigator
-  private Navigator navigator;
-public static final String MAINVIEW = "main";
-
   // Repositories
-  private final CustomerRepository customerRepository;
-  private final CustomerEditor customerEditor;
+  private CustomerRepository customerRepository;
+  private CustomerEditor customerEditor;
   // UI Components
   private Grid grid;
-  private final TextField textFieldFilter;
+  private TextField textFieldFilter;
   // Actions
-  private final Button buttonClearFilter;
-  private final Button buttonNewRecord;
-  private final Button buttonsPopup;
+  private Button buttonClearFilter;
+  private Button buttonNewRecord;
+  private Button buttonsPopup;
   // Defaults
-  private final Country countryDefault;
-  //TODO
-  //Inject Configuration Properties
+  private Country countryDefault;
+
   @Value("${model.faker.records.country.default}")
   private long countryDefaultId;
 
-  @Autowired
-  public VaadinUI(CustomerRepository customerRepository, CountryRepository countryRepository, CustomerEditor editor) {
-    //Repositories
-    this.customerRepository = customerRepository;
+  //@Autowired
+  //private CustomerRepository customerRepository;
+  //@Autowired
+  //private CountryRepository countryRepository;
+  //@Autowired
+  //private CustomerEditor customerEditor;
+
+  //@Autowired
+  public CustomerView(/*CustomerRepository customerRepository, CountryRepository countryRepository, CustomerEditor customerEditor*/) {
+  }
+
+//@Autowired
+  @PostConstruct
+  void init(/*CustomerRepository customerRepository, CountryRepository countryRepository, CustomerEditor customerEditor*/) {
+    // Repositories
+//this.customerRepository = customerRepository;
     // Get First Country
-    this.countryDefault = countryRepository.findAll().get(0);
+//this.countryDefault = countryRepository.findOne(countryDefaultId);//findAll().get(0)
+
+    log.info("Im here");
+
+
+/*
+
+
     //Ui
-    this.customerEditor = editor;
-    this.grid = null;
+    this.customerEditor = customerEditor;
     this.textFieldFilter = new TextField();
     this.buttonClearFilter = new Button(FontAwesome.TIMES);
     this.buttonNewRecord = new Button("New customer", FontAwesome.PLUS);
     this.buttonsPopup =  new Button("Open popup", FontAwesome.PLUS);
     this.buttonClearFilter.setDescription("Clear the current filter");
-  }
 
-  @Override
-  protected void init(VaadinRequest request) {
-
-    initNavigator();
-
-    // AccordionMenu
-    Accordion accordionMenu = new Accordion();
-    accordionMenu.setWidth(200.0f, Unit.POINTS);
-    accordionMenu.setHeight(100.0f, Unit.PERCENTAGE);
-
-    for (int i = 0; i < 6; i++) {
-      final VerticalLayout layout = new VerticalLayout();
-      Button button1 = new Button("Button1");
-      button1.setWidth(100.0f, Unit.PERCENTAGE);
-      Button button2 = new Button("Button1");
-      button2.setWidth(100.0f, Unit.PERCENTAGE);
-      layout.addComponent(button1);
-      layout.addComponent(button2);
-      layout.setSpacing(true);
-      layout.setMargin(true);
-      accordionMenu.addTab(layout, "Tab " + i, FontAwesome.ANDROID);
-      //accordionMenu.getTab(i - 1).setIcon(FontAwesome.ANDROID);
-    }
+    setSizeFull();
 
     // Box Filter and Clear Filter inside CssLayout, usefull in this case to group components in one component
     CssLayout cssLayoutFiltering = new CssLayout();
@@ -138,14 +120,14 @@ public static final String MAINVIEW = "main";
     // Render a button that deletes the data row (item)
     grid.getColumn("delete")
         .setRenderer(new ButtonRenderer(e ->
-            {
-                Customer customer = (Customer) e.getItemId();
-                // Remove from grid
-                grid.getContainerDataSource().removeItem(customer);
-                //Remove from Repository
-                //TODO : Required using getId()
-                customerRepository.delete(customer.getId());
-            }
+        {
+          Customer customer = (Customer) e.getItemId();
+          // Remove from grid
+          grid.getContainerDataSource().removeItem(customer);
+          //Remove from Repository
+          //TODO : Required using getId()
+          customerRepository.delete(customer.getId());
+        }
         )).setWidth(100);
 
     //grid.addColumn("edit", FontIcon.class)
@@ -170,15 +152,15 @@ public static final String MAINVIEW = "main";
     // Configure the grid to use all of the available space more efficiently.
     verticalLayoutMainContent.setExpandRatio(grid, 1);
 
-    // Build Main Content
-    HorizontalLayout horizontalLayoutMainContent = new HorizontalLayout(accordionMenu, verticalLayoutMainContent);
-    horizontalLayoutMainContent.setSizeFull();
-    // Configure the verticalLayoutMainContent to use all of the available space more efficiently.
-    horizontalLayoutMainContent.setExpandRatio(verticalLayoutMainContent, 1);
+//// Build Main Content
+//HorizontalLayout horizontalLayoutMainContent = new HorizontalLayout(accordionMenu, verticalLayoutMainContent);
+//horizontalLayoutMainContent.setSizeFull();
+//// Configure the verticalLayoutMainContent to use all of the available space more efficiently.
+//horizontalLayoutMainContent.setExpandRatio(verticalLayoutMainContent, 1);
+
 
     // Set UI Content
-    //setContent(verticalLayoutMainContent);
-    setContent(horizontalLayoutMainContent);
+    addComponent(verticalLayoutMainContent);
 
     // configure layouts and components
     horizontalLayoutToolbar.setSpacing(true);
@@ -216,7 +198,7 @@ public static final String MAINVIEW = "main";
     // Instantiate and edit new Customer the new button is clicked
     buttonNewRecord.addClickListener(e -> customerEditor.editCustomer(new Customer("", "", new Date(), "", countryDefault)));
 
-    buttonsPopup.addClickListener(event -> showPopup((Customer) grid.getSelectedRow()));
+    buttonsPopup.addClickListener(e -> showPopup((Customer) grid.getSelectedRow()));
 
     // Listen changes made by the customerEditor, refresh data from backend
     customerEditor.setChangeHandler(() -> {
@@ -226,18 +208,15 @@ public static final String MAINVIEW = "main";
 
     // Initialize listing
     //TODO
-//listCustomers(null);
+    //listCustomers(null);
+
+*/
   }
 
-  private void initNavigator() {
-    getPage().setTitle(appName);
+  @Override
+  public void enter(ViewChangeListener.ViewChangeEvent event) {
 
-    // Create a navigator to control the views
-    navigator = new Navigator(this, this);
-
-    // Create and register the views
-    navigator.addView("", new StartView(navigator));
-    navigator.addView(MAINVIEW, new MainView(navigator));
+    Notification.show("Welcome to CustomerMain View");
   }
 
   /**
@@ -316,7 +295,7 @@ public static final String MAINVIEW = "main";
   }
 
   private void showPopup(Customer item) {
-
+/*
     log.info(item.toString());
 
     // Create a sub-window and set the content
@@ -343,5 +322,11 @@ public static final String MAINVIEW = "main";
 
     // Open it in the UI
     addWindow(window);
+*/
+
+    CustomerForm customerForm = new CustomerForm();
+
+    // Add it to the root component
+    UI.getCurrent().addWindow(customerForm);
   }
 }

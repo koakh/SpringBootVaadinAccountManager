@@ -1,9 +1,9 @@
-package hello;
+package com.koakh.accountmanager;
 
-import hello.model.country.CountryFaker;
-import hello.model.country.CountryRepository;
-import hello.model.customer.CustomerFaker;
-import hello.model.customer.CustomerRepository;
+import com.koakh.accountmanager.model.country.CountryFaker;
+import com.koakh.accountmanager.model.country.CountryRepository;
+import com.koakh.accountmanager.model.customer.CustomerFaker;
+import com.koakh.accountmanager.model.customer.CustomerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

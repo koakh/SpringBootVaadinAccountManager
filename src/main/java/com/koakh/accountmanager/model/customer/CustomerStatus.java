@@ -1,4 +1,4 @@
-package hello.model.customer;
+package com.koakh.accountmanager.model.customer;
 
 /**
  * Created by mario on 01/12/2016.

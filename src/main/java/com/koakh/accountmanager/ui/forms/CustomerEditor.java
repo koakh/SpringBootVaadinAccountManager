@@ -1,17 +1,13 @@
-package hello.ui;
+package com.koakh.accountmanager.ui.forms;
 
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.validator.BeanValidator;
-import com.vaadin.data.validator.RegexpValidator;
-import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.*;
-import hello.model.country.Country;
-import hello.model.country.CountryRepository;
-import hello.model.customer.Customer;
-import hello.model.customer.CustomerRepository;
-import hello.model.customer.CustomerStatus;
+import com.koakh.accountmanager.model.country.Country;
+import com.koakh.accountmanager.model.country.CountryRepository;
+import com.koakh.accountmanager.model.customer.Customer;
+import com.koakh.accountmanager.model.customer.CustomerRepository;
+import com.koakh.accountmanager.model.customer.CustomerStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.data.fieldgroup.BeanFieldGroup;

@@ -1,4 +1,4 @@
-package hello.model.country;
+package com.koakh.accountmanager.model.country;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

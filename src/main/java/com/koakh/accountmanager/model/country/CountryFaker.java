@@ -1,6 +1,6 @@
-package hello.model.country;
+package com.koakh.accountmanager.model.country;
 
-import hello.Application;
+import com.koakh.accountmanager.Application;
 import io.bloco.faker.Faker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

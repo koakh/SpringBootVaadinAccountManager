@@ -34,7 +34,6 @@ dependencies {
     //Spring Boot Starter
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     //Vaadin
-    //compile("com.vaadin:vaadin-spring-boot-starter:1.0.0")
     compile('com.vaadin:vaadin-spring-boot-starter:1.1.1')
     //Hibernate+MySql
     compile("org.hibernate:hibernate-validator")

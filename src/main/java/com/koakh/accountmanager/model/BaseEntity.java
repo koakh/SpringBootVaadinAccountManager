@@ -1,18 +1,9 @@
-package hello.model;
-
-import org.hibernate.annotations.NaturalId;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import java.io.Serializable;
-import java.util.Objects;
-import java.util.UUID;
+package com.koakh.accountmanager.model;
 
 /**
- * Created by mario on 01/12/2016.
+ * Created by mario on 09/12/2016.
  */
-public abstract class BaseEntity implements Serializable {
-
+public class BaseEntity {
   /*
   @Id
   @GeneratedValue
