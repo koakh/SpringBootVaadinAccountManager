@@ -1,6 +1,7 @@
 package com.koakh.accountmanager;
 
 import com.koakh.accountmanager.ui.views.customer.CustomerView;
+import com.koakh.accountmanager.ui.views.system.HelpView;
 import com.koakh.accountmanager.ui.views.test.*;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.View;
@@ -61,7 +62,8 @@ public class MainUI extends UI implements ViewDisplay {
     final VerticalLayout verticalLayoutPage1 = new VerticalLayout();
     verticalLayoutPage1.addComponent(createNavigationButton("Default View", DefaultView.VIEW_NAME, FontAwesome.APPLE, true));
     verticalLayoutPage1.addComponent(createNavigationButton("View Scoped View", ViewScopedView.VIEW_NAME, FontAwesome.BINOCULARS, true));
-    verticalLayoutPage1.addComponent(createNavigationButton("Customer.View", CustomerView.VIEW_NAME, FontAwesome.BATTERY_0, true));
+    verticalLayoutPage1.addComponent(createNavigationButton("Help View", HelpView.VIEW_NAME, FontAwesome.BATTERY_0, true));
+    verticalLayoutPage1.addComponent(createNavigationButton("Customer View", CustomerView.VIEW_NAME, FontAwesome.GITHUB, true));
     verticalLayoutPage1.setSpacing(true);
     verticalLayoutPage1.setMargin(true);
     accordionMenu.addTab(verticalLayoutPage1, "Page1", FontAwesome.AMAZON);

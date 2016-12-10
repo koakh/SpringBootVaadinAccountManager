@@ -14,7 +14,6 @@ import com.koakh.accountmanager.model.country.Country;
 import com.koakh.accountmanager.model.customer.Customer;
 import com.koakh.accountmanager.model.customer.CustomerRepository;
 import com.koakh.accountmanager.ui.forms.CustomerEditor;
-import com.koakh.accountmanager.ui.views.IViewNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,16 +59,19 @@ public class CustomerView extends VerticalLayout implements View {
   public CustomerView(/*CustomerRepository customerRepository, CountryRepository countryRepository, CustomerEditor customerEditor*/) {
   }
 
-//@Autowired
   @PostConstruct
-  void init(/*CustomerRepository customerRepository, CountryRepository countryRepository, CustomerEditor customerEditor*/) {
+  void init() {
+    setMargin(true);
+    setSpacing(true);
+    addComponent(new Label("This is the default customer view"));
+
+
     // Repositories
 //this.customerRepository = customerRepository;
     // Get First Country
 //this.countryDefault = countryRepository.findOne(countryDefaultId);//findAll().get(0)
 
     log.info("Im here");
-
 
 /*
 
@@ -215,9 +217,16 @@ public class CustomerView extends VerticalLayout implements View {
 
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
+    // This view is constructed in the init() method()
 
     Notification.show("Welcome to CustomerMain View");
   }
+
+//@Autowired
+//@PostConstruct
+//void init(/*CustomerRepository customerRepository, CountryRepository countryRepository, CustomerEditor customerEditor*/) {
+//
+//}
 
   /**
    * Generate GeneratedPropertyContainer for grid, with custom columns
