@@ -93,8 +93,8 @@ public class MainUI extends UI implements ViewDisplay {
     // VerticalLayout
     final VerticalLayout verticalLayout = new VerticalLayout();
     verticalLayout.setSizeFull();
-    verticalLayout.setMargin(true);
     verticalLayout.setSpacing(true);
+    verticalLayout.setMargin(true);
     verticalLayout.addComponent(navigationBar);
     verticalLayout.addComponent(springViewDisplay);
     verticalLayout.setExpandRatio(springViewDisplay, 1.0f);

@@ -6,6 +6,10 @@ import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.FontIcon;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.koakh.accountmanager.Application;
@@ -14,8 +18,11 @@ import com.koakh.accountmanager.model.country.Country;
 import com.koakh.accountmanager.model.customer.Customer;
 import com.koakh.accountmanager.model.customer.CustomerRepository;
 import com.koakh.accountmanager.ui.forms.CustomerEditor;
+import com.vaadin.ui.renderers.*;
+import com.vaadin.ui.themes.ValoTheme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 
@@ -32,9 +39,6 @@ public class CustomerView extends VerticalLayout implements View {
 
   private static final Logger log = LoggerFactory.getLogger(Application.class);
 
-  // Repositories
-  private CustomerRepository customerRepository;
-  private CustomerEditor customerEditor;
   // UI Components
   private Grid grid;
   private TextField textFieldFilter;
@@ -48,76 +52,55 @@ public class CustomerView extends VerticalLayout implements View {
   @Value("${model.faker.records.country.default}")
   private long countryDefaultId;
 
-  //@Autowired
-  //private CustomerRepository customerRepository;
-  //@Autowired
-  //private CountryRepository countryRepository;
-  //@Autowired
-  //private CustomerEditor customerEditor;
-
-  //@Autowired
-  public CustomerView(/*CustomerRepository customerRepository, CountryRepository countryRepository, CustomerEditor customerEditor*/) {
-  }
+  @Autowired
+  private CustomerRepository customerRepository;
 
   @PostConstruct
   void init() {
-    setMargin(true);
-    setSpacing(true);
-    addComponent(new Label("This is the default customer view"));
-
-
-    // Repositories
-//this.customerRepository = customerRepository;
-    // Get First Country
-//this.countryDefault = countryRepository.findOne(countryDefaultId);//findAll().get(0)
-
-    log.info("Im here");
-
-/*
-
-
-    //Ui
-    this.customerEditor = customerEditor;
-    this.textFieldFilter = new TextField();
-    this.buttonClearFilter = new Button(FontAwesome.TIMES);
-    this.buttonNewRecord = new Button("New customer", FontAwesome.PLUS);
-    this.buttonsPopup =  new Button("Open popup", FontAwesome.PLUS);
-    this.buttonClearFilter.setDescription("Clear the current filter");
-
     setSizeFull();
+    //addStyleName(ValoTheme.PANEL_BORDERLESS);
+
+    // Compose Toolbar UI Objects
+    textFieldFilter = new TextField();
+    buttonClearFilter = new Button("Clear filter", FontAwesome.TIMES);
+    buttonNewRecord = new Button("New customer", FontAwesome.PLUS);
+    // Assign placeHolder, used here for using method setInputPrompt only
+    textFieldFilter.setInputPrompt("Filter by Last Name");
 
     // Box Filter and Clear Filter inside CssLayout, usefull in this case to group components in one component
     CssLayout cssLayoutFiltering = new CssLayout();
     cssLayoutFiltering.addComponents(textFieldFilter, buttonClearFilter);
     cssLayoutFiltering.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 
-    // Build horizontalLayoutToolbar
-    HorizontalLayout horizontalLayoutToolbar = new HorizontalLayout(cssLayoutFiltering, buttonNewRecord, buttonsPopup);
+    // Build horizontalLayoutToolbar to pack Toolbar UI Objects
+    HorizontalLayout horizontalLayoutToolbar = new HorizontalLayout(cssLayoutFiltering, buttonNewRecord);
+    horizontalLayoutToolbar.setSpacing(true);
 
-    // Start with a GeneratedPropertyContainer with all customers from repository
+    // Start with a GeneratedPropertyContainer with all customers from repository, with custom properties(columns) added to model for action buttons
     GeneratedPropertyContainer generatedPropertyContainer = getGeneratedPropertyContainer(customerRepository.findAll());
 
-    // Create a grid, and assign GeneratedPropertyContainer (SetContainerDataSource to generatedPropertyContainer with buttons)
+    // Create a Grid, and assign GeneratedPropertyContainer same has SetContainerDataSource
     grid = new Grid(generatedPropertyContainer);
     grid.setSizeFull();
-    // Reconfigure columns, Model + New Properties
+    // Reconfigure columns, Removing all from default model and add desires ones with actions buttons
     grid.removeAllColumns();
-    grid.addColumn("firstName");
-    grid.addColumn("lastName");
-    grid.addColumn("email");
-    grid.addColumn("edit");
-    grid.addColumn("delete");
-    // Configure columns : grid.getColumns()
-    grid.getColumn("firstName").setHeaderCaption("First Name");
-    grid.getColumn("lastName").setHeaderCaption("Last Name");
+    // Model Columns
+    grid.addColumn("id").setHeaderCaption("##").setRenderer(new NumberRenderer("%02d")).setExpandRatio(0);
+    grid.addColumn("firstName").setHeaderCaption("First Name").setExpandRatio(2);
+    grid.addColumn("lastName").setHeaderCaption("Last Name").setExpandRatio(2);
+    grid.addColumn("email").setHeaderCaption("Last Name").setExpandRatio(4);
+    // Action Buttons
+    grid.addColumn("edit").setHeaderCaption("Edit");//.setRenderer(new HtmlRenderer());
+    grid.addColumn("delete").setHeaderCaption("Delete");//.setRenderer(new HtmlRenderer());
+    // Configure columns : show all columns grid.getColumns(), and get grid.getColumn("columnName")
     // Join Action Columns
     grid.getDefaultHeaderRow().join("edit", "delete").setText("Actions");
 
     // Render a button that edits the data row (item)
     grid.getColumn("edit")
-        .setRenderer(new ButtonRenderer(
-            e -> showPopup((Customer) e.getItemId()))
-        ).setWidth(100);
+    .setRenderer(new ButtonRenderer(
+        e -> showPopup((Customer) e.getItemId()))
+    ).setWidth(100).setResizable(false);
 
     // Render a button that deletes the data row (item)
     grid.getColumn("delete")
@@ -126,11 +109,97 @@ public class CustomerView extends VerticalLayout implements View {
           Customer customer = (Customer) e.getItemId();
           // Remove from grid
           grid.getContainerDataSource().removeItem(customer);
-          //Remove from Repository
           //TODO : Required using getId()
+          //Remove from Repository
           customerRepository.delete(customer.getId());
         }
-        )).setWidth(100);
+        )).setWidth(100).setResizable(false);
+
+    /*
+    grid.addColumn("edit", FontIcon.class)
+        .setRenderer(new FontIconRenderer(new ClickableRenderer.RendererClickListener() {
+          @Override
+          public void click(ClickableRenderer.RendererClickEvent e) {
+            Notification.show("Editing item " + e.getItemId());
+          }
+        }));
+
+    grid.addColumn("delete", FontIcon.class)
+        .setRenderer(new FontIconRenderer(new ClickableRenderer.RendererClickListener() {
+          @Override
+          public void click(ClickableRenderer.RendererClickEvent e) {
+            Notification.show("Deleted item " + e.getItemId());
+          }
+        }));
+    */
+
+    // Build verticalLayoutMainContent
+    VerticalLayout verticalLayoutMainContent = new VerticalLayout(horizontalLayoutToolbar, grid);
+    verticalLayoutMainContent.setSizeFull();
+    // Configure the grid to use all of the available space more efficiently.
+    verticalLayoutMainContent.setExpandRatio(grid, 1);
+    verticalLayoutMainContent.setMargin(true);
+    verticalLayoutMainContent.setSpacing(true);
+
+    // Add component to View
+    addComponent(verticalLayoutMainContent);
+
+    // Hook logic to components
+
+    // Replace listing with filtered content when user changes filter
+    textFieldFilter.addTextChangeListener(e -> listCustomers(e.getText()));
+
+    buttonClearFilter.addClickListener(e -> {
+      textFieldFilter.clear();
+      listCustomers(null);
+    });
+
+    // Connect selected Customer to customerEditor or hide if none is selected
+    grid.addSelectionListener(e -> {
+      if (e.getSelected().isEmpty()) {
+//customerEditor.setVisible(false);
+      }
+      else {
+//customerEditor.editCustomer((Customer) grid.getSelectedRow());
+      }
+    });
+
+    // Instantiate and edit new Customer the new button is clicked
+//buttonNewRecord.addClickListener(e -> customerEditor.editCustomer(new Customer("", "", new Date(), "", countryDefault)));
+
+//buttonsPopup.addClickListener(e -> showPopup((Customer) grid.getSelectedRow()));
+
+    // Listen changes made by the customerEditor, refresh data from backend
+//customerEditor.setChangeHandler(() -> {
+//  customerEditor.setVisible(false);
+//  listCustomers(textFieldFilter.getValue());
+//});
+
+    // Initialize listing
+    //TODO
+    //listCustomers(null);
+
+
+
+
+
+    // Repositories
+//this.customerRepository = customerRepository;
+    // Get First Country
+//this.countryDefault = countryRepository.findOne(countryDefaultId);//findAll().get(0)
+
+/*
+
+
+    //Ui
+    this.customerEditor = customerEditor;
+
+
+    this.buttonsPopup =  new Button("Open popup", FontAwesome.PLUS);
+
+    setSizeFull();
+
+...
 
     //grid.addColumn("edit", FontIcon.class)
     //    .setRenderer(new FontIconRenderer(new ClickableRenderer.RendererClickListener() {
@@ -147,71 +216,6 @@ public class CustomerView extends VerticalLayout implements View {
     //        Notification.show("Deleted item " + e.getItemId());
     //      }
     //    }));
-
-    // Build verticalLayoutMainContent
-    VerticalLayout verticalLayoutMainContent = new VerticalLayout(horizontalLayoutToolbar, grid, customerEditor);
-    verticalLayoutMainContent.setSizeFull();
-    // Configure the grid to use all of the available space more efficiently.
-    verticalLayoutMainContent.setExpandRatio(grid, 1);
-
-//// Build Main Content
-//HorizontalLayout horizontalLayoutMainContent = new HorizontalLayout(accordionMenu, verticalLayoutMainContent);
-//horizontalLayoutMainContent.setSizeFull();
-//// Configure the verticalLayoutMainContent to use all of the available space more efficiently.
-//horizontalLayoutMainContent.setExpandRatio(verticalLayoutMainContent, 1);
-
-
-    // Set UI Content
-    addComponent(verticalLayoutMainContent);
-
-    // configure layouts and components
-    horizontalLayoutToolbar.setSpacing(true);
-    verticalLayoutMainContent.setMargin(true);
-    verticalLayoutMainContent.setSpacing(true);
-
-    // assign placeHolder
-    textFieldFilter.setInputPrompt("Filter by Last Name");
-
-    // Hook logic to components
-
-    // Replace listing with filtered content when user changes filter
-    textFieldFilter.addTextChangeListener(e -> listCustomers(e.getText()));
-
-    buttonClearFilter.addClickListener(e -> {
-      textFieldFilter.clear();
-      listCustomers(null);
-    });
-
-    // Connect selected Customer to customerEditor or hide if none is selected
-    grid.addSelectionListener(e -> {
-
-      //TODO : Remove this Comment
-      //Fix for You are using toString() instead of getValue()
-      //Customer selected = (Customer) e.getSelected().iterator().next();
-
-      if (e.getSelected().isEmpty()) {
-        customerEditor.setVisible(false);
-      }
-      else {
-        customerEditor.editCustomer((Customer) grid.getSelectedRow());
-      }
-    });
-
-    // Instantiate and edit new Customer the new button is clicked
-    buttonNewRecord.addClickListener(e -> customerEditor.editCustomer(new Customer("", "", new Date(), "", countryDefault)));
-
-    buttonsPopup.addClickListener(e -> showPopup((Customer) grid.getSelectedRow()));
-
-    // Listen changes made by the customerEditor, refresh data from backend
-    customerEditor.setChangeHandler(() -> {
-      customerEditor.setVisible(false);
-      listCustomers(textFieldFilter.getValue());
-    });
-
-    // Initialize listing
-    //TODO
-    //listCustomers(null);
-
 */
   }
 
@@ -222,12 +226,6 @@ public class CustomerView extends VerticalLayout implements View {
     Notification.show("Welcome to CustomerMain View");
   }
 
-//@Autowired
-//@PostConstruct
-//void init(/*CustomerRepository customerRepository, CountryRepository countryRepository, CustomerEditor customerEditor*/) {
-//
-//}
-
   /**
    * Generate GeneratedPropertyContainer for grid, with custom columns
    * @param customerDataSource
@@ -237,6 +235,7 @@ public class CustomerView extends VerticalLayout implements View {
 
     // Get BeanItemContainer from DataSource
     BeanItemContainer beanItemContainer = new BeanItemContainer(Customer.class, customerDataSource);
+
     // Init GeneratedPropertyContainer, to store BeanItemContainer with custom Generated Properties
     GeneratedPropertyContainer generatedPropertyContainer = new GeneratedPropertyContainer(beanItemContainer);
 
@@ -245,7 +244,8 @@ public class CustomerView extends VerticalLayout implements View {
         new PropertyValueGenerator<String>() {
           @Override
           public String getValue(Item item, Object itemId, Object propertyId) {
-            return "Edit"; // The caption
+            return "Edit"; // The caption using text without .setRenderer(new HtmlRenderer());
+            //return FontAwesome.PENCIL.getHtml();//require .setRenderer(new HtmlRenderer()); in column
           }
           @Override
           public Class<String> getType() {
@@ -254,26 +254,13 @@ public class CustomerView extends VerticalLayout implements View {
         }
     );
 
-    //http://stackoverflow.com/questions/29922292/fill-buttons-in-grid-with-fontawesome-icons-and-add-tooltips-to-them
-    //https://github.com/FokkeZB/IconFont/blob/master/test/font-awesome.tss
-    //generatedPropertyContainer.addGeneratedProperty("edit", new PropertyValueGenerator<String>() {
-    //  @Override
-    //  public String getValue(Item item, Object itemId, Object propertyId) {
-    //    return FontAwesome.WARNING.getHtml();
-    //  }
-    //
-    //  @Override
-    //  public Class<String> getType() {
-    //    return String.class;
-    //  }
-    //});
-
     // Add Delete GeneratedProperty to BeanItemContainer
     generatedPropertyContainer.addGeneratedProperty("delete",
         new PropertyValueGenerator<String>() {
           @Override
           public String getValue(Item item, Object itemId, Object propertyId) {
-            return "Delete"; // The caption
+            return "Del"; // The caption using text without .setRenderer(new HtmlRenderer());
+            //return FontAwesome.PENCIL.getHtml();//require .setRenderer(new HtmlRenderer()); in column
           }
           @Override
           public Class<String> getType() {
@@ -303,38 +290,10 @@ public class CustomerView extends VerticalLayout implements View {
     grid.setContainerDataSource(generatedPropertyContainer);
   }
 
-  private void showPopup(Customer item) {
-/*
-    log.info(item.toString());
+  private void showPopup(Customer customer) {
 
-    // Create a sub-window and set the content
-    Window window = new Window("Sub-window");
-    window.setDraggable(true);
-    window.setResizable(false);
-    window.setWidth(300.0f, Unit.PIXELS);
-    window.setHeight(300.0f, Unit.PIXELS);
-
-    //Vertical Content
-    VerticalLayout subContent = new VerticalLayout();
-    subContent.setMargin(true);
-    window.setContent(subContent);
-
-    // Put some components in it
-    subContent.addComponent(new Label(item.getFirstName()));
-    subContent.addComponent(new Button("Awlright"));
-
-    // Center it in the browser window
-    window.center();
-
-    // Modal
-    window.setModal(true);
-
-    // Open it in the UI
-    addWindow(window);
-*/
-
-    CustomerForm customerForm = new CustomerForm();
-
+    // Init Form
+    CustomerForm customerForm = new CustomerForm(customer);
     // Add it to the root component
     UI.getCurrent().addWindow(customerForm);
   }

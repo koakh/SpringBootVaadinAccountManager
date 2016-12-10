@@ -1,5 +1,7 @@
 package com.koakh.accountmanager.ui.forms;
 
+import com.koakh.accountmanager.model.customer.Customer;
+import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.*;
 
 /**
@@ -8,18 +10,23 @@ import com.vaadin.ui.*;
  * https://vaadin.com/docs/-/part/framework/layout/layout-sub-window.html
  */
 public class CustomerForm extends Window {
-  public CustomerForm() {
-    super("Subs on Sale"); // Set window caption
+
+  private float width = 600.0f;
+  private float height = 400.0f;
+
+  public CustomerForm(Customer customer) {
+    super("Edit Customer"); // Set window caption
     center();
+    setModal(true);
+    setClosable(false);
+    setWidth(width, Unit.POINTS);
+    setHeight(height, Unit.POINTS);
 
     // Some basic content for the window
     VerticalLayout content = new VerticalLayout();
     content.addComponent(new Label("Just say it's OK!"));
     content.setMargin(true);
     setContent(content);
-
-    // Disable the close button
-    setClosable(false);
 
     // Trivial logic for closing the sub-window
     Button ok = new Button("OK");
