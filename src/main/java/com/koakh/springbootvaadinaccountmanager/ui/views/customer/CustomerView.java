@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
+import org.vaadin.gridutil.renderer.EditButtonValueRenderer;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -51,6 +52,13 @@ public class CustomerView extends VerticalLayout implements View {
 
   @Autowired
   private CustomerRepository customerRepository;
+
+  @Override
+  public void enter(ViewChangeListener.ViewChangeEvent event) {
+    // This view is constructed in the init() method()
+
+    Notification.show("Welcome to CustomerMain View");
+  }
 
   @PostConstruct
   void init() {
@@ -95,12 +103,23 @@ public class CustomerView extends VerticalLayout implements View {
     grid.getDefaultHeaderRow().join("edit", "delete").setText("Actions");
 
     // Render a button that edits the data row (item)
-    grid.getColumn("edit")
-    .setRenderer(new ButtonRenderer(
-        e -> {
-          //Notification.show("Clicked " + grid.getContainerDataSource().getContainerProperty(e.getItemId(), "firstName"));
-          showPopup((Customer) e.getItemId());
-        })
+//grid.getColumn("edit")
+//.setRenderer(new ButtonRenderer(
+//    e -> {
+//      //Notification.show("Clicked " + grid.getContainerDataSource().getContainerProperty(e.getItemId(), "firstName"));
+//      showPopup((Customer) e.getItemId());
+//    })
+//).setWidth(100).setResizable(false);
+
+    // add custom button to active column
+    grid.getColumn("edit").setRenderer(new EditButtonValueRenderer(
+            new ClickableRenderer.RendererClickListener() {
+              @Override
+              public void click(final ClickableRenderer.RendererClickEvent event) {
+                Notification.show(event.getItemId().toString() + " want's to get active", Notification.Type.HUMANIZED_MESSAGE);
+              }
+            }
+        )
     ).setWidth(100).setResizable(false);
 
     //grid.getColumn("id")
@@ -121,19 +140,44 @@ public class CustomerView extends VerticalLayout implements View {
     //    .setWidth(200);
 
     // Render a button that deletes the data row (item)
-    grid.getColumn("delete")
-        .setRenderer(new ButtonRenderer(e ->
-        {
-          //Notification.show("Clicked " + grid.getContainerDataSource().getContainerProperty(e.getItemId(), "firstName"));
-          Customer customer = (Customer) e.getItemId();
-          // Remove from grid
-          grid.getContainerDataSource().removeItem(customer);
-          //TODO : Required using getId()
-          //Remove from Repository
-          customerRepository.delete(customer.getId());
-        }
-        )).setWidth(100).setResizable(false);
+//grid.getColumn("delete")
+//    .setRenderer(new ButtonRenderer(e ->
+//    {
+//      //Notification.show("Clicked " + grid.getContainerDataSource().getContainerProperty(e.getItemId(), "firstName"));
+//      Customer customer = (Customer) e.getItemId();
+//      // Remove from grid
+//      grid.getContainerDataSource().removeItem(customer);
+//      //TODO : Required using getId()
+//      //Remove from Repository
+//      customerRepository.delete(customer.getId());
+//    }
+//    )).setWidth(100).setResizable(false);
 
+    // add custom button to active column
+    grid.getColumn("delete").setRenderer(new EditButtonValueRenderer(
+            new ClickableRenderer.RendererClickListener() {
+              @Override
+              public void click(final ClickableRenderer.RendererClickEvent event) {
+                Notification.show(event.getItemId().toString() + " want's to get active", Notification.Type.HUMANIZED_MESSAGE);
+              }
+            }
+        )
+    );
+
+    // first of all you need to set a custom style to the column
+    grid.setCellStyleGenerator(new Grid.CellStyleGenerator() {
+      @Override
+      public String getStyle(final Grid.CellReference cellReference) {
+        if (cellReference.getPropertyId().equals("edit")) {
+          return "link-icon-edit";
+        }
+        else if (cellReference.getPropertyId().equals("delete")) {
+          return "link-icon-delete";
+        } else {
+          return null;
+        }
+      }
+    });
 
     //grid.getColumn("delete").setRenderer(new FontIconRenderer(e -> Notification.show("Deleted item " + e.getItemId())));
 
@@ -245,13 +289,6 @@ public class CustomerView extends VerticalLayout implements View {
 */
   }
 
-  @Override
-  public void enter(ViewChangeListener.ViewChangeEvent event) {
-    // This view is constructed in the init() method()
-
-    Notification.show("Welcome to CustomerMain View");
-  }
-
   /**
    * Generate GeneratedPropertyContainer for grid, with custom columns
    * @param customerDataSource
@@ -270,7 +307,8 @@ public class CustomerView extends VerticalLayout implements View {
         new PropertyValueGenerator<String>() {
           @Override
           public String getValue(Item item, Object itemId, Object propertyId) {
-            return "Edit"; // The caption using text without .setRenderer(new HtmlRenderer());
+            //Empty Caption, Using button
+            return "Edit";// "Edit" : The caption using text without .setRenderer(new HtmlRenderer());
             //return FontAwesome.PENCIL.getHtml();//require .setRenderer(new HtmlRenderer()); in column
           }
           @Override
@@ -285,7 +323,8 @@ public class CustomerView extends VerticalLayout implements View {
         new PropertyValueGenerator<String>() {
           @Override
           public String getValue(Item item, Object itemId, Object propertyId) {
-            return "Del"; // The caption using text without .setRenderer(new HtmlRenderer());
+            //Empty Caption, Using button
+            return "Del"; //Del : The caption using text without .setRenderer(new HtmlRenderer());
             //return FontAwesome.PENCIL.getHtml();//require .setRenderer(new HtmlRenderer()); in column
           }
           @Override
