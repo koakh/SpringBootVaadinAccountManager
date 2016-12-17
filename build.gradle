@@ -1,58 +1,49 @@
+// build.gradle
+
 buildscript {
-    ext {
-        springBootVersion = '1.4.2.RELEASE'
-    }
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    }
+  repositories {
+    maven { url "https://plugins.gradle.org/m2/" }
+  }
+  dependencies {
+    classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.0.RELEASE")
+    classpath "fi.jasoft.plugin:gradle-vaadin-plugin:0.11.4"
+  }
 }
-
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-apply plugin: 'org.springframework.boot'
-
-
-jar {
-    baseName = 'spring-boot-vaadin-account-manager'
-    version = '0.1.0'
-}
+apply plugin: 'spring-boot'
+apply plugin: 'fi.jasoft.plugin.vaadin'
 
 repositories {
-    mavenCentral()
-    maven { url "https://repository.jboss.org/nexus/content/repositories/releases" }
-    //Faker
-    maven { url 'https://jitpack.io' }
+  maven { url "http://repo.spring.io/libs-snapshot" }
+  //Faker
+  maven { url 'https://jitpack.io' }
+  //Vaadin Addons
+  //maven { url 'http://maven.vaadin.com/vaadin-addons' }
 }
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
 
 dependencies {
-    //Spring Boot Starter
-    compile("org.springframework.boot:spring-boot-starter-data-jpa")
-    //Vaadin
-    compile('com.vaadin:vaadin-spring-boot-starter:1.1.1')
-    //Hibernate+MySql
-    compile("org.hibernate:hibernate-validator")
-    runtime("mysql:mysql-connector-java")
-    //Javax
-    compile("javax.el:javax.el-api:3.0.0")
-    //Faker
-    compile("com.github.blocoio:faker:1.0.1")
-    //Test
-    testCompile("junit:junit")
+  //Vaadin Spring Boot Starter
+  compile('com.vaadin:vaadin-spring-boot-starter:1.1.1')
+  //Spring Boot Starter Jpa
+  compile("org.springframework.boot:spring-boot-starter-data-jpa")
+  //Vaadin Addons
+  compile("org.vaadin.addons:vaadin-grid-util:1.0.9")
+  //Hibernate+MySql
+  compile("org.hibernate:hibernate-validator")
+  runtime("mysql:mysql-connector-java")
+  //Javax
+  compile("javax.el:javax.el-api:3.0.0")
+  //Faker
+  compile("com.github.blocoio:faker:1.0.1")
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.9'
+jar {
+  baseName = 'account-manager'
+  version = '0.0.1-SNAPSHOT'
 }
 
-dependencyManagement {
-    imports {
-        mavenBom "com.vaadin:vaadin-bom:7.7.5"
-    }
+springBoot {
+  mainClass = 'com.koakh.springbootvaadinaccountmanager.Application'
 }
+
+// Configure bootRun to ensure the widgetset and theme is compiled 
+bootRun.dependsOn 'vaadinCompile', 'vaadinThemeCompile'
