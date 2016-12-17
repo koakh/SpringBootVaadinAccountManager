@@ -72,6 +72,7 @@ public class ApplicationUI extends UI implements ViewDisplay {
 		final Accordion accordionMenu = new Accordion();
 		accordionMenu.setWidth(200.0f, Unit.POINTS);
 		accordionMenu.setHeight(100.0f, Unit.PERCENTAGE);
+
 		// AccordionMenu: Page1
 		final VerticalLayout verticalLayoutPage1 = new VerticalLayout();
 		verticalLayoutPage1.addComponent(createNavigationButton("Default View", DefaultView.VIEW_NAME, FontAwesome.APPLE, true));
@@ -92,6 +93,7 @@ public class ApplicationUI extends UI implements ViewDisplay {
 		// NavigationBar
 		final CssLayout navigationBar = new CssLayout();
 		navigationBar.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
+
 		// Create Navigation Buttons
 		navigationBar.addComponent(createNavigationButton("Default View", DefaultView.VIEW_NAME, FontAwesome.ANDROID, false));
 		navigationBar.addComponent(createNavigationButton("View Scoped View", ViewScopedView.VIEW_NAME, FontAwesome.ADN, false));
@@ -104,7 +106,7 @@ public class ApplicationUI extends UI implements ViewDisplay {
 		springViewDisplay = new Panel();
 		springViewDisplay.setSizeFull();
 
-		// VerticalLayout
+		// VerticalLayout (NavigationBar + SpringViewDisplay)
 		final VerticalLayout verticalLayout = new VerticalLayout();
 		verticalLayout.setSizeFull();
 		verticalLayout.setSpacing(true);
