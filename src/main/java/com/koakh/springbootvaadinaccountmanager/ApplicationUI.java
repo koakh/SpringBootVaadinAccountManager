@@ -1,11 +1,11 @@
 package com.koakh.springbootvaadinaccountmanager;
 
-import com.koakh.springbootvaadinaccountmanager.enums.Gender;
 import com.koakh.springbootvaadinaccountmanager.ui.views.customer.CustomerView;
 import com.koakh.springbootvaadinaccountmanager.ui.views.system.AccessDeniedView;
 import com.koakh.springbootvaadinaccountmanager.ui.views.system.ErrorView;
 import com.koakh.springbootvaadinaccountmanager.ui.views.system.HelpView;
 import com.koakh.springbootvaadinaccountmanager.ui.views.test.*;
+import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.FontAwesome;
@@ -15,18 +15,11 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.annotation.SpringViewDisplay;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.*;
-import com.vaadin.annotations.Theme;
-import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.vaadin.gridutil.cell.GridCellFilter;
-import org.vaadin.gridutil.renderer.EditButtonValueRenderer;
-import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
-
-import java.util.Arrays;
 
 /**
  * Created by mario on 09/12/2016.
