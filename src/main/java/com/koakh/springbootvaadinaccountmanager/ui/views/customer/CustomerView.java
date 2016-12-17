@@ -91,13 +91,13 @@ public class CustomerView extends VerticalLayout implements View {
     // Reconfigure columns, Removing all from default model and add desires ones with actions buttons
     grid.removeAllColumns();
     // Model Columns
-    grid.addColumn("id").setHeaderCaption("##").setRenderer(new NumberRenderer("%02d")).setExpandRatio(0);
+    grid.addColumn("id").setHeaderCaption("##").setWidth(100).setResizable(false).setRenderer(new NumberRenderer("%02d")).setExpandRatio(1);
     grid.addColumn("firstName").setHeaderCaption("First Name").setExpandRatio(2);
     grid.addColumn("lastName").setHeaderCaption("Last Name").setExpandRatio(2);
-    grid.addColumn("email").setHeaderCaption("Last Name").setExpandRatio(4);
+    //grid.addColumn("email").setHeaderCaption("Email").setExpandRatio(4);
     // Action Buttons
-    grid.addColumn("edit").setHeaderCaption("Edit");//.setRenderer(new HtmlRenderer());
-    grid.addColumn("delete").setHeaderCaption("Delete");//.setRenderer(new HtmlRenderer());
+    grid.addColumn("edit").setHeaderCaption("Edit").setWidth(58).setResizable(false).setExpandRatio(1);//.setRenderer(new HtmlRenderer());
+    grid.addColumn("delete").setHeaderCaption("Delete").setWidth(58).setResizable(false).setExpandRatio(1);//.setRenderer(new HtmlRenderer());
     // Configure columns : show all columns grid.getColumns(), and get grid.getColumn("columnName")
     // Join Action Columns
     grid.getDefaultHeaderRow().join("edit", "delete").setText("Actions");
@@ -116,11 +116,13 @@ public class CustomerView extends VerticalLayout implements View {
             new ClickableRenderer.RendererClickListener() {
               @Override
               public void click(final ClickableRenderer.RendererClickEvent event) {
-                Notification.show(event.getItemId().toString() + " want's to get active", Notification.Type.HUMANIZED_MESSAGE);
+                String recordId = grid.getContainerDataSource().getContainerProperty(event.getItemId(), "id").toString();
+                Notification.show(String.format("Edit record: [#%s]", recordId), Notification.Type.WARNING_MESSAGE);
+                showPopup((Customer) event.getItemId());
               }
             }
         )
-    ).setWidth(100).setResizable(false);
+    );
 
     //grid.getColumn("id")
     //    .setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener() {
@@ -158,7 +160,14 @@ public class CustomerView extends VerticalLayout implements View {
             new ClickableRenderer.RendererClickListener() {
               @Override
               public void click(final ClickableRenderer.RendererClickEvent event) {
-                Notification.show(event.getItemId().toString() + " want's to get active", Notification.Type.HUMANIZED_MESSAGE);
+                String recordId = grid.getContainerDataSource().getContainerProperty(event.getItemId(), "id").toString();
+                Notification.show(String.format("Delete record: [#%s]", recordId), Notification.Type.WARNING_MESSAGE);
+                Customer customer = (Customer) event.getItemId();
+                // Remove from grid
+                grid.getContainerDataSource().removeItem(customer);
+                //TODO : Required using getId()
+                //Remove from Repository
+                customerRepository.delete(customer.getId());
               }
             }
         )
@@ -170,8 +179,7 @@ public class CustomerView extends VerticalLayout implements View {
       public String getStyle(final Grid.CellReference cellReference) {
         if (cellReference.getPropertyId().equals("edit")) {
           return "link-icon-edit";
-        }
-        else if (cellReference.getPropertyId().equals("delete")) {
+        } else if (cellReference.getPropertyId().equals("delete")) {
           return "link-icon-delete";
         } else {
           return null;
@@ -225,8 +233,7 @@ public class CustomerView extends VerticalLayout implements View {
     grid.addSelectionListener(e -> {
       if (e.getSelected().isEmpty()) {
 //customerEditor.setVisible(false);
-      }
-      else {
+      } else {
 //customerEditor.editCustomer((Customer) grid.getSelectedRow());
       }
     });
@@ -248,9 +255,6 @@ public class CustomerView extends VerticalLayout implements View {
     // Initialize listing
     //TODO
     //listCustomers(null);
-
-
-
 
 
     // Repositories
@@ -291,6 +295,7 @@ public class CustomerView extends VerticalLayout implements View {
 
   /**
    * Generate GeneratedPropertyContainer for grid, with custom columns
+   *
    * @param customerDataSource
    * @return
    */
@@ -308,9 +313,10 @@ public class CustomerView extends VerticalLayout implements View {
           @Override
           public String getValue(Item item, Object itemId, Object propertyId) {
             //Empty Caption, Using button
-            return "Edit";// "Edit" : The caption using text without .setRenderer(new HtmlRenderer());
+            return "<span style='visibility: hidden;'>Edit</span>";// "Edit" : The caption using text without .setRenderer(new HtmlRenderer());
             //return FontAwesome.PENCIL.getHtml();//require .setRenderer(new HtmlRenderer()); in column
           }
+
           @Override
           public Class<String> getType() {
             return String.class;
@@ -324,9 +330,10 @@ public class CustomerView extends VerticalLayout implements View {
           @Override
           public String getValue(Item item, Object itemId, Object propertyId) {
             //Empty Caption, Using button
-            return "Del"; //Del : The caption using text without .setRenderer(new HtmlRenderer());
+            return "<span style='visibility: hidden;'>Delete</span>"; //Del : The caption using text without .setRenderer(new HtmlRenderer());
             //return FontAwesome.PENCIL.getHtml();//require .setRenderer(new HtmlRenderer()); in column
           }
+
           @Override
           public Class<String> getType() {
             return String.class;
@@ -355,8 +362,7 @@ public class CustomerView extends VerticalLayout implements View {
 
     if (StringUtils.isEmpty(text)) {
       customerDataSource = customerRepository.findAll();
-    }
-    else {
+    } else {
       customerDataSource = customerRepository.findByLastNameStartsWithIgnoreCase(text);
     }
 
