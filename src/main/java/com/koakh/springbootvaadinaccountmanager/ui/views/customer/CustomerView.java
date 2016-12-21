@@ -53,6 +53,10 @@ public class CustomerView extends VerticalLayout implements View {
   @Autowired
   private CustomerRepository customerRepository;
 
+//REQUIRD TO PASS TO CustomerForm
+@Autowired
+private CustomerForm customerForm;
+
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
     // This view is constructed in the init() method()
@@ -375,7 +379,7 @@ public class CustomerView extends VerticalLayout implements View {
   private void showPopup(Customer customer) {
 
     // Init Form
-    CustomerForm customerForm = new CustomerForm(customer);
+    //CustomerForm customerForm = new CustomerForm(/*customer*/);
     // Add it to the root component
     UI.getCurrent().addWindow(customerForm);
   }
