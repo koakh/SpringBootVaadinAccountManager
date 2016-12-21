@@ -18,6 +18,7 @@ import javax.annotation.PostConstruct;
 @UIScope
 @SpringView(name = AccessDeniedView.VIEW_NAME)
 public class AccessDeniedView extends VerticalLayout implements View {
+
   public static final String VIEW_NAME = "accessdenied";
 
   @PostConstruct

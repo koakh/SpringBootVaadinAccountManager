@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
 @SpringUI
 @SpringView(name = HelpView.VIEW_NAME)
 public class HelpView extends VerticalLayout implements View {
+
   public static final String VIEW_NAME = "help";
 
   private static final Logger log = LoggerFactory.getLogger(Application.class);

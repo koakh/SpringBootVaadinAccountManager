@@ -1,6 +1,7 @@
 package com.koakh.springbootvaadinaccountmanager.ui.views.test;
 
 import com.koakh.springbootvaadinaccountmanager.Greeter;
+import com.koakh.springbootvaadinaccountmanager.ViewGreeter;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
@@ -15,6 +16,7 @@ import javax.annotation.PostConstruct;
  */
 @SpringView(name = ViewScopedView.VIEW_NAME)
 public class ViewScopedView extends VerticalLayout implements View {
+
   public static final String VIEW_NAME = "view";
 
   // The same instance will be used by all views of the UI

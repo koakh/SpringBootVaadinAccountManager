@@ -1,4 +1,4 @@
-package com.koakh.springbootvaadinaccountmanager.ui.views.test;
+package com.koakh.springbootvaadinaccountmanager;
 
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.ViewScope;

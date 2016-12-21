@@ -24,6 +24,7 @@ import org.springframework.util.StringUtils;
 import org.vaadin.gridutil.renderer.EditButtonValueRenderer;
 
 import javax.annotation.PostConstruct;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,6 +33,7 @@ import java.util.List;
 //@SpringView(name = IViewNames.CUSTOMER)
 @SpringView(name = CustomerView.VIEW_NAME)
 public class CustomerView extends VerticalLayout implements View {
+
   public static final String VIEW_NAME = "customer";
 
   private static final Logger log = LoggerFactory.getLogger(Application.class);
@@ -50,12 +52,15 @@ public class CustomerView extends VerticalLayout implements View {
   @Value("${model.faker.records.country.default}")
   private long countryDefaultId;
 
-  @Autowired
-  private CustomerRepository customerRepository;
+  // Reference to Constructor Autowired Beans
+  private final CustomerRepository customerRepository;
+  private final CustomerForm customerForm;
 
-//REQUIRD TO PASS TO CustomerForm
-@Autowired
-private CustomerForm customerForm;
+  @Autowired
+  public CustomerView(CustomerRepository customerRepository, CustomerForm customerForm) {
+    this.customerRepository = customerRepository;
+    this.customerForm = customerForm;
+  }
 
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -244,8 +249,8 @@ private CustomerForm customerForm;
 
     // Instantiate and edit new Customer the new button is clicked
 //TODO: Add new record Button
-//buttonNewRecord.addClickListener(e -> customerEditor.editCustomer(new Customer("", "", new Date(), "", countryDefault)));
-//buttonRefresh.addClickListener(e -> customerEditor.editCustomer(new Customer("", "", new Date(), "", countryDefault)));
+buttonNewRecord.addClickListener(e -> showPopup(new Customer("", "", new Date(), "", countryDefault)));
+buttonRefresh.addClickListener(e -> listCustomers(textFieldFilter.getValue()));
 
 
 //buttonsPopup.addClickListener(e -> showPopup((Customer) grid.getSelectedRow()));
@@ -316,7 +321,7 @@ private CustomerForm customerForm;
         new PropertyValueGenerator<String>() {
           @Override
           public String getValue(Item item, Object itemId, Object propertyId) {
-            //Empty Caption, Using button
+            //Hack : Empty Caption, Using button
             return "<span style='visibility: hidden;'>Edit</span>";// "Edit" : The caption using text without .setRenderer(new HtmlRenderer());
             //return FontAwesome.PENCIL.getHtml();//require .setRenderer(new HtmlRenderer()); in column
           }
@@ -333,7 +338,7 @@ private CustomerForm customerForm;
         new PropertyValueGenerator<String>() {
           @Override
           public String getValue(Item item, Object itemId, Object propertyId) {
-            //Empty Caption, Using button
+            //Hack : Empty Caption, Using button
             return "<span style='visibility: hidden;'>Delete</span>"; //Del : The caption using text without .setRenderer(new HtmlRenderer());
             //return FontAwesome.PENCIL.getHtml();//require .setRenderer(new HtmlRenderer()); in column
           }
@@ -378,8 +383,8 @@ private CustomerForm customerForm;
 
   private void showPopup(Customer customer) {
 
-    // Init Form
-    //CustomerForm customerForm = new CustomerForm(/*customer*/);
+    // Assign customer to editForm Bean
+    customerForm.editCustomer(customer);
     // Add it to the root component
     UI.getCurrent().addWindow(customerForm);
   }

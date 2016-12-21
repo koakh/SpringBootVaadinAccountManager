@@ -15,6 +15,7 @@ import javax.annotation.PostConstruct;
  */
 @SpringView(name = DefaultView.VIEW_NAME)
 public class DefaultView extends VerticalLayout implements View {
+
   public static final String VIEW_NAME = "";
 
   @PostConstruct

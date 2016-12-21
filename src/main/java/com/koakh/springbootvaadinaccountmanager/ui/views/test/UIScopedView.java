@@ -21,6 +21,7 @@ import javax.annotation.PostConstruct;
 @UIScope
 @SpringView(name = UIScopedView.VIEW_NAME)
 public class UIScopedView extends VerticalLayout implements View {
+
   public static final String VIEW_NAME = "ui";
 
   @Autowired

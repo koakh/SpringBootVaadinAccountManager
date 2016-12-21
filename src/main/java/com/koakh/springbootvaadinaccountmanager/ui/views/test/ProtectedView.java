@@ -22,6 +22,7 @@ import javax.annotation.PostConstruct;
 @UIScope
 @SpringView(name = ProtectedView.VIEW_NAME)
 public class ProtectedView extends VerticalLayout implements View, ViewAccessControl {
+
   public static final String VIEW_NAME = "protected";
 
   @PostConstruct

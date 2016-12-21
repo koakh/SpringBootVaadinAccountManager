@@ -14,6 +14,7 @@ import javax.annotation.PostConstruct;
  */
 @SpringView(name = RestrictedView.VIEW_NAME, ui={ ApplicationUI.class })
 public class RestrictedView extends VerticalLayout implements View {
+
   public static final String VIEW_NAME = "restricted";
 
   @PostConstruct

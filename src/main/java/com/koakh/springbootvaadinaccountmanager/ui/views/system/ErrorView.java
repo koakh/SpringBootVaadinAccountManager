@@ -18,6 +18,7 @@ import javax.annotation.PostConstruct;
 @UIScope
 @SpringView(name = ErrorView.VIEW_NAME)
 public class ErrorView extends VerticalLayout implements View {
+
   public static final String VIEW_NAME = "error";
 
   @PostConstruct
